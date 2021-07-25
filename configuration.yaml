@@ -1,0 +1,16 @@
+comelit:
+  hub:
+    host: X.X.X.X
+    port: 1883
+    mqtt-user: hsrv-user
+    mqtt-password: sf1nE9bjPc
+    username: comelithub
+    password: xxxxxxxx
+    serial: xxxxxxxxxxxxx
+    client: homeassistant
+    scan_interval: 2
+  vedo:
+    host: X.X.X.X
+    port: 80
+    password: xxxxxx
+    scan_interval: 30
