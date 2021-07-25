@@ -1,0 +1,18 @@
+{
+  "domain": "comelit",
+  "name": "Comelit Hub/Vedo",
+  "documentation": "https://github.com/giovannicammarata/homeassistant-comelit",
+  "issues": "https://github.com/giovannicammarata/homeassistant-comelit/issues",
+  "dependencies": [],
+  "codeowners": [
+    "giovannicammarata"
+  ],
+  "requirements": [
+    "requests",
+    "paho-mqtt",
+    "wrapt_timeout_decorator"
+  ],
+  "quality_scale": "silver",
+  "version": "1.0",
+  "config_flow": false
+}
