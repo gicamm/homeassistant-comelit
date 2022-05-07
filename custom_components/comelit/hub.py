@@ -102,9 +102,16 @@ class CommandHub:
     def __init__(self, hub):
         self._hub = hub
 
-    def on(self, req_type, id):
+    def on(self, req_type, id, brightness=None):
         try:
-            req = {"req_type": req_type, "req_sub_type": 3, "obj_id": id, "act_type": 0, "act_params": [1]}
+            if brightness is None:
+                act_params = [1]
+                act_type = 0
+            else:
+                act_params = [brightness, -1]
+                act_type = 11
+
+            req = {"req_type": req_type, "req_sub_type": 3, "obj_id": id, "act_type": act_type, "act_params": act_params}
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error opening %s", e)
@@ -116,8 +123,8 @@ class CommandHub:
         except Exception as e:
             _LOGGER.exception("Error closing %s", e)
 
-    def light_on(self, id):
-        self.on(RequestType.LIGHT, id)
+    def light_on(self, id, brightness=None):
+        self.on(RequestType.LIGHT, id, brightness)
 
     def light_off(self, id):
         self.off(RequestType.LIGHT, id)
@@ -279,10 +286,12 @@ class ComelitHub:
         try:
             if data["status"] == "1":
                 state = STATE_ON
+                brightness = int(data["bright"])
             else:
                 state = STATE_OFF
+                brightness = 255
 
-            light = ComelitLight(id, description, state, CommandHub(self))
+            light = ComelitLight(id, description, state, brightness, CommandHub(self))
             if id not in self.lights:  # Add the new sensor
                 if hasattr(self, 'sensor_add_entities'):
                     self.light_add_entities([light])
