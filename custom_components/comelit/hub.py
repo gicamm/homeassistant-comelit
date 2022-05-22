@@ -284,12 +284,18 @@ class ComelitHub:
 
     def update_light(self, id, description, data):
         try:
-            if data["status"] == "1":
-                state = STATE_ON
+            _LOGGER.debug("update_light: %s has data %s", description, data)
+            
+            # Dimmable light (3=light, 4=dimmable)
+            if data["type"] == 3 and data["sub_type"] == 4:
                 brightness = int(data["bright"])
             else:
+                brightness = None
+
+            if data["status"] == "1":
+                state = STATE_ON
+            else:
                 state = STATE_OFF
-                brightness = 255
 
             light = ComelitLight(id, description, state, brightness, CommandHub(self))
             if id not in self.lights:  # Add the new sensor

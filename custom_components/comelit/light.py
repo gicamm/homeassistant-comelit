@@ -32,12 +32,11 @@ class ComelitLight(ComelitDevice, LightEntity):
 
     @property
     def supported_color_modes(self):
-        return {COLOR_MODE_BRIGHTNESS}
+        return None if self._brightness is None else {COLOR_MODE_BRIGHTNESS}
 
     @property
     def color_mode(self):
-        # TODO only if we see it actually supports brightness!
-        return COLOR_MODE_BRIGHTNESS
+        return None if self._brightness is None else COLOR_MODE_BRIGHTNESS
     
     @property
     def brightness(self):
@@ -49,10 +48,8 @@ class ComelitLight(ComelitDevice, LightEntity):
 
     def turn_on(self, **kwargs):
         if ATTR_BRIGHTNESS in kwargs:
-            brightness = kwargs[ATTR_BRIGHTNESS]
-        else:
-            brightness = None
-        self._light.light_on(self._id, brightness)
+            self._brightness = kwargs[ATTR_BRIGHTNESS]
+        self._light.light_on(self._id, self._brightness)
 
     def turn_off(self, **kwargs):
         self._light.light_off(self._id)
