@@ -5,7 +5,7 @@ import json
 import paho.mqtt.client as mqtt
 from threading import Thread
 
-from homeassistant.const import STATE_CLOSED, STATE_OPEN, STATE_ON, STATE_OFF
+from homeassistant.const import STATE_CLOSED, STATE_OPEN, STATE_CLOSING, STATE_OPENING, STATE_ON, STATE_OFF
 
 from .scene import ComelitScenario
 from .sensor import PowerSensor, TemperatureSensor, HumiditySensor
@@ -311,20 +311,26 @@ class ComelitHub:
 
     def update_cover(self, id, description, data, status_key):
         try:
-            if data[status_key] != '1':
-                state = STATE_CLOSED
-            else:
-                state = STATE_OPEN
+            if data['status'] == '0':
+                # Not moving
+                if data['open_status'] == '1':
+                    state = STATE_OPEN
+                else:
+                    state = STATE_CLOSED
+            elif data['status'] == '1':
+                state = STATE_OPENING
+            elif data['status'] == '2':
+                state = STATE_CLOSING
+            
             if id not in self.covers:  # Add the new cover
                 if hasattr(self, 'cover_add_entities'):
-                    # Timed studio shutter @ around 18 seconds.  This logic is awful, increasingly clear that we need a big rewrite here.
-                    cover = ComelitCover(id, description, state, 18, CommandHub(self))
+                    cover = ComelitCover(id, description, state, CommandHub(self))
                     self.cover_add_entities([cover])
                     self.covers[id] = cover
                     _LOGGER.info("added the cover %s %s", description, id)
             else:
                 _LOGGER.debug("updating the cover %s %s", description, id)
-                self.covers[id].update_cover_state(state)
+                self.covers[id].update_state(state)
         except Exception as e:
             _LOGGER.exception("Error updating the cover %s", e)
 
