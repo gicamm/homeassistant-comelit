@@ -315,9 +315,10 @@ class ComelitHub:
                 state = STATE_CLOSED
             else:
                 state = STATE_OPEN
-            cover = ComelitCover(id, description, state, 0, CommandHub(self))
             if id not in self.covers:  # Add the new cover
                 if hasattr(self, 'cover_add_entities'):
+                    # Timed studio shutter @ around 18 seconds.  This logic is awful, increasingly clear that we need a big rewrite here.
+                    cover = ComelitCover(id, description, state, 18, CommandHub(self))
                     self.cover_add_entities([cover])
                     self.covers[id] = cover
                     _LOGGER.info("added the cover %s %s", description, id)
