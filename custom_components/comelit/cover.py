@@ -19,10 +19,11 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
 class ComelitCover(ComelitDevice, CoverEntity):
 
-    def __init__(self, id, description, closed, hub):
+    def __init__(self, id, description, closed, position, hub):
         ComelitDevice.__init__(self, id, None, description)
         self._state = closed
         self._hub = hub
+        self._position = position
 
     @property
     def is_closed(self):
@@ -36,6 +37,14 @@ class ComelitCover(ComelitDevice, CoverEntity):
     def is_closing(self):
         return self._state == STATE_CLOSING
 
+    @property
+    def current_cover_position(self):  # -> int | None:
+        return self._position
+    
+    def set_cover_position(self, position, **kwargs):
+        _LOGGER.debug(f"Trying to SET POSITION {position} cover {self.name}! _state={self._state}")
+        self._hub.cover_position(self._id, position)
+
     def open_cover(self, **kwargs):
         _LOGGER.debug(f"Trying to OPEN cover {self.name}! _state={self._state}")
         self._hub.cover_up(self._id)
@@ -45,6 +54,14 @@ class ComelitCover(ComelitDevice, CoverEntity):
         _LOGGER.debug(f"Trying to CLOSE cover {self.name}! _state={self._state}")
         self._hub.cover_down(self._id)
         # self._state = STATE_CLOSING
+    
+    def update_state(self, state, position):
+        super().update_state(state)
+
+        old = self._position
+        self._position = position
+        if old != position:
+            self.async_schedule_update_ha_state()
 
     def stop_cover(self, **kwargs):
         _LOGGER.debug(f"Trying to STOP cover {self.name}! is_opening={self.is_opening}, is_closing={self.is_closing}")

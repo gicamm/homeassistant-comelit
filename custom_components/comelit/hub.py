@@ -108,6 +108,8 @@ class CommandHub:
                 act_params = [1]
                 act_type = 0
             else:
+                if req_type is not RequestType.LIGHT:
+                    _LOGGER.error(f'Requested brightness change for a {req_type}!?')
                 act_params = [brightness, -1]
                 act_type = 11
 
@@ -137,6 +139,14 @@ class CommandHub:
 
     def cover_up(self, id):
         self.on(RequestType.COVER, id)
+
+    def cover_position(self, id, position):
+        try:
+            _LOGGER.info(f'Setting cover {id} to position {position}')
+            req = {"req_type": RequestType.COVER, "req_sub_type": 3, "obj_id": id, "act_type": 52, "act_params": [int(position*255/100)]}
+            self._hub.publish(req)
+        except Exception as e:
+            _LOGGER.exception("Error setting position %s", e)
 
     def cover_down(self, id):
         self.off(RequestType.COVER, id)
@@ -321,16 +331,18 @@ class ComelitHub:
                 state = STATE_OPENING
             elif data['status'] == '2':
                 state = STATE_CLOSING
+
+            position = int(100*float(data['position'])/255)
             
             if id not in self.covers:  # Add the new cover
                 if hasattr(self, 'cover_add_entities'):
-                    cover = ComelitCover(id, description, state, CommandHub(self))
+                    cover = ComelitCover(id, description, state, position, CommandHub(self))
                     self.cover_add_entities([cover])
                     self.covers[id] = cover
                     _LOGGER.info("added the cover %s %s", description, id)
             else:
                 _LOGGER.debug("updating the cover %s %s", description, id)
-                self.covers[id].update_state(state)
+                self.covers[id].update_state(state, position)
         except Exception as e:
             _LOGGER.exception("Error updating the cover %s", e)
 
