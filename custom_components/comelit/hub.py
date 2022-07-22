@@ -309,7 +309,7 @@ class ComelitHub:
 
             light = ComelitLight(id, description, state, brightness, CommandHub(self))
             if id not in self.lights:  # Add the new sensor
-                if hasattr(self, 'sensor_add_entities'):
+                if hasattr(self, 'light_add_entities'):
                     self.light_add_entities([light])
                     self.lights[id] = light
                     _LOGGER.info("added the light %s %s", description, light.entity_name)
