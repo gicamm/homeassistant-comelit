@@ -5,7 +5,8 @@ import json
 import paho.mqtt.client as mqtt
 from threading import Thread
 
-from homeassistant.const import STATE_CLOSED, STATE_OPEN, STATE_CLOSING, STATE_OPENING, STATE_ON, STATE_OFF
+from homeassistant.const import STATE_CLOSED, STATE_OPEN, STATE_CLOSING, STATE_OPENING, STATE_ON, STATE_OFF, \
+    STATE_UNKNOWN
 
 from .scene import ComelitScenario
 from .sensor import PowerSensor, TemperatureSensor, HumiditySensor
@@ -321,19 +322,23 @@ class ComelitHub:
 
     def update_cover(self, id, description, data, status_key):
         try:
-            if data['status'] == '0':
-                # Not moving
-                if data['open_status'] == '1':
-                    state = STATE_OPEN
-                else:
-                    state = STATE_CLOSED
-            elif data['status'] == '1':
-                state = STATE_OPENING
-            elif data['status'] == '2':
-                state = STATE_CLOSING
+            if 'position' in data:
+                if data['status'] == '0':
+                    # Not moving
+                    if data['open_status'] == '1':
+                        state = STATE_OPEN
+                    else:
+                        state = STATE_CLOSED
+                elif data['status'] == '1':
+                    state = STATE_OPENING
+                elif data['status'] == '2':
+                    state = STATE_CLOSING
 
-            position = int(100*float(data['position'])/255)
-            
+                position = int(100 * float(data['position']) / 255)
+            else:  # unable to define the position. works for legacy cover
+                state = STATE_UNKNOWN
+                position = -1
+
             if id not in self.covers:  # Add the new cover
                 if hasattr(self, 'cover_add_entities'):
                     cover = ComelitCover(id, description, state, position, CommandHub(self))
