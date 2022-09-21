@@ -5,7 +5,7 @@ import json
 import paho.mqtt.client as mqtt
 from threading import Thread
 
-from homeassistant.const import STATE_CLOSED, STATE_OPEN, STATE_ON, STATE_OFF
+from homeassistant.const import STATE_CLOSED, STATE_OPEN, STATE_CLOSING, STATE_OPENING, STATE_ON, STATE_OFF
 
 from .scene import ComelitScenario
 from .sensor import PowerSensor, TemperatureSensor, HumiditySensor
@@ -102,9 +102,18 @@ class CommandHub:
     def __init__(self, hub):
         self._hub = hub
 
-    def on(self, req_type, id):
+    def on(self, req_type, id, brightness=None):
         try:
-            req = {"req_type": req_type, "req_sub_type": 3, "obj_id": id, "act_type": 0, "act_params": [1]}
+            if brightness is None:
+                act_params = [1]
+                act_type = 0
+            else:
+                if req_type is not RequestType.LIGHT:
+                    _LOGGER.error(f'Requested brightness change for a {req_type}!?')
+                act_params = [brightness, -1]
+                act_type = 11
+
+            req = {"req_type": req_type, "req_sub_type": 3, "obj_id": id, "act_type": act_type, "act_params": act_params}
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error opening %s", e)
@@ -116,8 +125,8 @@ class CommandHub:
         except Exception as e:
             _LOGGER.exception("Error closing %s", e)
 
-    def light_on(self, id):
-        self.on(RequestType.LIGHT, id)
+    def light_on(self, id, brightness=None):
+        self.on(RequestType.LIGHT, id, brightness)
 
     def light_off(self, id):
         self.off(RequestType.LIGHT, id)
@@ -130,6 +139,14 @@ class CommandHub:
 
     def cover_up(self, id):
         self.on(RequestType.COVER, id)
+
+    def cover_position(self, id, position):
+        try:
+            _LOGGER.info(f'Setting cover {id} to position {position}')
+            req = {"req_type": RequestType.COVER, "req_sub_type": 3, "obj_id": id, "act_type": 52, "act_params": [int(position*255/100)]}
+            self._hub.publish(req)
+        except Exception as e:
+            _LOGGER.exception("Error setting position %s", e)
 
     def cover_down(self, id):
         self.off(RequestType.COVER, id)
@@ -277,14 +294,22 @@ class ComelitHub:
 
     def update_light(self, id, description, data):
         try:
+            _LOGGER.debug("update_light: %s has data %s", description, data)
+            
+            # Dimmable light (3=light, 4=dimmable)
+            if data["type"] == 3 and data["sub_type"] == 4:
+                brightness = int(data["bright"])
+            else:
+                brightness = None
+
             if data["status"] == "1":
                 state = STATE_ON
             else:
                 state = STATE_OFF
 
-            light = ComelitLight(id, description, state, CommandHub(self))
+            light = ComelitLight(id, description, state, brightness, CommandHub(self))
             if id not in self.lights:  # Add the new sensor
-                if hasattr(self, 'sensor_add_entities'):
+                if hasattr(self, 'light_add_entities'):
                     self.light_add_entities([light])
                     self.lights[id] = light
                     _LOGGER.info("added the light %s %s", description, light.entity_name)
@@ -296,19 +321,28 @@ class ComelitHub:
 
     def update_cover(self, id, description, data, status_key):
         try:
-            if data[status_key] != '1':
-                state = STATE_CLOSED
-            else:
-                state = STATE_OPEN
-            cover = ComelitCover(id, description, state, 0, CommandHub(self))
+            if data['status'] == '0':
+                # Not moving
+                if data['open_status'] == '1':
+                    state = STATE_OPEN
+                else:
+                    state = STATE_CLOSED
+            elif data['status'] == '1':
+                state = STATE_OPENING
+            elif data['status'] == '2':
+                state = STATE_CLOSING
+
+            position = int(100*float(data['position'])/255)
+            
             if id not in self.covers:  # Add the new cover
                 if hasattr(self, 'cover_add_entities'):
+                    cover = ComelitCover(id, description, state, position, CommandHub(self))
                     self.cover_add_entities([cover])
                     self.covers[id] = cover
                     _LOGGER.info("added the cover %s %s", description, id)
             else:
                 _LOGGER.debug("updating the cover %s %s", description, id)
-                self.covers[id].update_cover_state(state)
+                self.covers[id].update_state(state, position)
         except Exception as e:
             _LOGGER.exception("Error updating the cover %s", e)
 
