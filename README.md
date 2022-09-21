@@ -32,7 +32,7 @@ comelit:
 #### MQTT Mosquitto Client
 Execute the mosquitto client and look at the output
 ```bash
-mosquitto_sub -v -h 192.168.188.21 -u hsrv-user -P sf1nE9bjPc -t 'HSrv/002529170576/rx/localClient-fS6w9JFmSjA' -p 1883 -i 654321
+mosquitto_sub -v -h 192.168.188.21 -u hsrv-user -P sf1nE9bjPc -t 'HSrv/002529170576/rx/localClient-XXXX' -p 1883 -i 654321
 ```
 
 It prints the full topic name, like below:
