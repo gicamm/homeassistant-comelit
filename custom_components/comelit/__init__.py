@@ -40,44 +40,42 @@ def setup(hass, config):
     hass.data[DOMAIN]['conf'] = conf
 
     # Comelit Hub
-    hub_conf = conf["hub"]
-    if hub_conf is not None:
-        schema = HUB_SCHEMA(hub_conf)
-        hub_host = schema[CONF_HOST]
-        mqtt_port = schema[CONF_PORT]
-        mqtt_user = schema[CONF_MQTT_USER]
-        mqtt_password = schema[CONF_MQTT_PASSWORD]
-        hub_user = schema[CONF_USERNAME]
-        scan_interval = schema[CONF_SCAN_INTERVAL]
-        hub_password = schema[CONF_PASSWORD]
-        hub_serial = schema[CONF_SERIAL]
-        hub_client = schema[CONF_CLIENT]
-        hub = ComelitHub(hub_client, hub_serial, hub_host, mqtt_port, mqtt_user, mqtt_password, hub_user, hub_password, scan_interval)
-        hass.data[DOMAIN]['hub'] = hub
-        hass.helpers.discovery.load_platform('sensor', DOMAIN, {}, config)
-        hass.helpers.discovery.load_platform('light', DOMAIN, {}, config)
-        hass.helpers.discovery.load_platform('cover', DOMAIN, {}, config)
-        hass.helpers.discovery.load_platform('scene', DOMAIN, {}, config)
-        hass.helpers.discovery.load_platform('switch', DOMAIN, {}, config)
-        _LOGGER.info("Comelit Hub integration started")
+    if 'hub' in conf:
+        hub_conf = conf["hub"]
+        if hub_conf is not None:
+            schema = HUB_SCHEMA(hub_conf)
+            hub_host = schema[CONF_HOST]
+            mqtt_port = schema[CONF_PORT]
+            mqtt_user = schema[CONF_MQTT_USER]
+            mqtt_password = schema[CONF_MQTT_PASSWORD]
+            hub_user = schema[CONF_USERNAME]
+            scan_interval = schema[CONF_SCAN_INTERVAL]
+            hub_password = schema[CONF_PASSWORD]
+            hub_serial = schema[CONF_SERIAL]
+            hub_client = schema[CONF_CLIENT]
+            hub = ComelitHub(hub_client, hub_serial, hub_host, mqtt_port, mqtt_user, mqtt_password, hub_user,
+                             hub_password, scan_interval)
+            hass.data[DOMAIN]['hub'] = hub
+            hass.helpers.discovery.load_platform('sensor', DOMAIN, {}, config)
+            hass.helpers.discovery.load_platform('light', DOMAIN, {}, config)
+            hass.helpers.discovery.load_platform('cover', DOMAIN, {}, config)
+            hass.helpers.discovery.load_platform('scene', DOMAIN, {}, config)
+            hass.helpers.discovery.load_platform('switch', DOMAIN, {}, config)
+            _LOGGER.info("Comelit Hub integration started")
 
     # Comelit Vedo
-    vedo_conf = conf["vedo"]
-    if vedo_conf is not None:
-        schema = VEDO_SCHEMA(vedo_conf)
-        vedo_host = schema[CONF_HOST]
-        vedo_port = schema[CONF_PORT]
-        vedo_pwd = schema[CONF_PASSWORD]
-        scan_interval = schema[CONF_SCAN_INTERVAL]
-        vedo = ComelitVedo(vedo_host, vedo_port, vedo_pwd, scan_interval)
-        hass.data[DOMAIN]['vedo'] = vedo
-        # hass.helpers.discovery.load_platform('binary_sensor', DOMAIN, {}, config)
-        hass.helpers.discovery.load_platform('alarm_control_panel', DOMAIN, {}, config)
-        _LOGGER.info("Comelit Vedo integration started")
+    if 'vedo' in conf:
+        vedo_conf = conf["vedo"]
+        if vedo_conf is not None:
+            schema = VEDO_SCHEMA(vedo_conf)
+            vedo_host = schema[CONF_HOST]
+            vedo_port = schema[CONF_PORT]
+            vedo_pwd = schema[CONF_PASSWORD]
+            scan_interval = schema[CONF_SCAN_INTERVAL]
+            vedo = ComelitVedo(vedo_host, vedo_port, vedo_pwd, scan_interval)
+            hass.data[DOMAIN]['vedo'] = vedo
+            # hass.helpers.discovery.load_platform('binary_sensor', DOMAIN, {}, config)
+            hass.helpers.discovery.load_platform('alarm_control_panel', DOMAIN, {}, config)
+            _LOGGER.info("Comelit Vedo integration started")
 
     return True
-
-
-
-
-
