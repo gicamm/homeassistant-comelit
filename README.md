@@ -1,6 +1,8 @@
 # Comelit Hub/Vedo integration
 
-With Comelit Hub/Vedo integration, you can connect your Home Assistant instance to Comelit Simple Home and Vedo systems. 
+With Comelit Hub/Vedo integration, you can connect your Home Assistant instance to Comelit Simple Home and Vedo systems.
+
+For more information, see the [Wiki](https://github.com/gicamm/homeassistant-comelit/wiki).
 
 ### Installation
 
@@ -29,21 +31,13 @@ comelit:
 
 ```
 ### How to find the hub serial?
-#### MQTT Mosquitto Client
-Execute the mosquitto client and look at the output
-```bash
-mosquitto_sub -v -h 192.168.188.21 -u hsrv-user -P sf1nE9bjPc -t 'HSrv/002529170576/rx/localClient-XXXX' -p 1883 -i 654321
-```
-
-It prints the full topic name, like below:
-```
-HSrv/SERIAL/tx/localClient-XXXX
-```
 
 #### Comelit app
 - Open the Comelit app
 - Scan for a new hub device
 - Copy the serial
+
+For more information, see the [Wiki](https://github.com/gicamm/homeassistant-comelit/wiki).
 
 ### Supported features
 - Lights

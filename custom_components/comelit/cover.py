@@ -23,7 +23,8 @@ class ComelitCover(ComelitDevice, CoverEntity):
         ComelitDevice.__init__(self, id, None, description)
         self._state = closed
         self._hub = hub
-        self._position = position
+        if position != -1:
+            self._position = position
 
     @property
     def is_closed(self):
@@ -58,10 +59,11 @@ class ComelitCover(ComelitDevice, CoverEntity):
     def update_state(self, state, position):
         super().update_state(state)
 
-        old = self._position
-        self._position = position
-        if old != position:
-            self.async_schedule_update_ha_state()
+        if position != -1:
+            old = self._position
+            self._position = position
+            if old != position:
+                self.async_schedule_update_ha_state()
 
     def stop_cover(self, **kwargs):
         _LOGGER.debug(f"Trying to STOP cover {self.name}! is_opening={self.is_opening}, is_closing={self.is_closing}")
