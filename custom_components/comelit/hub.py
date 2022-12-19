@@ -158,7 +158,7 @@ class CommandHub:
     def climate_set_temperature(self, id, temperature):
         try:
             _LOGGER.info(f'Setting climate {id} to temperature {temperature}')
-            req = {"req_type": RequestType.TEMPERATURE, "req_sub_type": 3, "obj_id": id, "act_type": 2, "act_params": [temperature]}
+            req = {"req_type": RequestType.TEMPERATURE, "req_sub_type": 3, "obj_id": id, "act_type": 2, "act_params": [int(temperature*10)]}
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error setting temperature %s", e)
