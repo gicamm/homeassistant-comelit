@@ -243,7 +243,10 @@ class ComelitHub:
                 RequestType.STATUS: self.status,
                 RequestType.PARAMETERS: self.parse_parameters,
             }
-            options[req_type](payload)
+
+            # I'm not 100% sure what these do, and I'm not sure why I wasn't seeing errors before.
+            if req_type in options:
+                options[req_type](payload)
         except Exception as e:
             _LOGGER.error(f"Error dispatching {payload}")
             _LOGGER.error(e)
