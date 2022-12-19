@@ -61,6 +61,7 @@ def setup(hass, config):
             hass.helpers.discovery.load_platform('cover', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('scene', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('switch', DOMAIN, {}, config)
+            hass.helpers.discovery.load_platform('climate', DOMAIN, {}, config)
             _LOGGER.info("Comelit Hub integration started")
 
     # Comelit Vedo
