@@ -77,8 +77,9 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
     def set_hvac_mode(self, hvac_mode):
         self._hub.climate_set_state(self._id, hvac_mode == HVACMode.HEAT)
 
-    def update_state(self, state, temperature, humidity):
+    def update_state(self, state, temperature, target_temperature, humidity):
         self._state = state
+        self._target_temperature = target_temperature
         self._temperature = temperature
         self._humidity = humidity
         self.async_write_ha_state()

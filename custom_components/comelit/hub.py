@@ -345,7 +345,7 @@ class ComelitHub:
                     self.climates[name] = climate
                     _LOGGER.info("added the climate %s", name)
             else:
-                self.climates[name].update_state(state, measured_temp, measured_humidity)
+                self.climates[name].update_state(state, measured_temp, target, measured_humidity)
                 _LOGGER.debug("updated the climate %s", name)
         except Exception as e:
             _LOGGER.exception("Error updating climate %s", e)
