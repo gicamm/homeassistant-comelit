@@ -73,9 +73,11 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
         temperature = kwargs.get(ATTR_TEMPERATURE)
         if temperature is not None:
             self._hub.climate_set_temperature(self._id, temperature)
+            self.schedule_update_ha_state()
 
     def set_hvac_mode(self, hvac_mode):
         self._hub.climate_set_state(self._id, hvac_mode == HVACMode.HEAT)
+        self.schedule_update_ha_state()
 
     def update_state(self, state, temperature, target_temperature, humidity):
         self._state = state

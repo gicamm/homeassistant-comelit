@@ -372,7 +372,7 @@ class ComelitHub:
                     self.lights[id] = light
                     _LOGGER.info("added the light %s %s", description, light.entity_name)
             else:
-                _LOGGER.debug("updating the light %s %s", description, light.entity_name)
+                _LOGGER.debug(f"updating the light {description} {light.entity_name} with state {state}")
                 self.lights[id].update_state(state)
         except Exception as e:
             _LOGGER.exception("Error updating light %s", e)
@@ -495,6 +495,13 @@ class ComelitHub:
             _LOGGER.error("Status error")
             _LOGGER.error(e)
 
+def update_status(hub):
+    try:
+        req = {"req_type": RequestType.STATUS, "req_sub_type": -1, "obj_id": "GEN#17#13#1", "detail_level": 1}
+        hub.publish(req)
+    except Exception as e:
+        _LOGGER.error("Error updating status")
+        _LOGGER.error(e)
 
 # Make a request for status
 class StatusUpdater (Thread):
@@ -505,19 +512,21 @@ class StatusUpdater (Thread):
         self.hub = hub
 
     def run(self):
-        parameters_timer = 0
+        # parameters_timer = 0
         _LOGGER.debug("Comelit Hub status snapshot started")
         while True:
             if self.hub.sessiontoken == "":
                 continue
 
+            # optiluca: does not do anything?
+            '''
             if parameters_timer == 0:
                 {"req_type": 8, "seq_id": 5, "req_sub_type": 23, "param_type": 2, "agent_type": 0,
                  "sessiontoken": "1367343208"}
                 parameters_timer = 30
+            '''
 
-            req = {"req_type": RequestType.STATUS, "req_sub_type": -1, "obj_id": "GEN#17#13#1", "detail_level": 1}
-            self.hub.publish(req)
+            update_status(self.hub)
             time.sleep(self._scan_interval)
-            parameters_timer = parameters_timer - 1
+            # parameters_timer = parameters_timer - 1
 

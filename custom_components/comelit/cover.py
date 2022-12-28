@@ -46,15 +46,19 @@ class ComelitCover(ComelitDevice, CoverEntity):
         _LOGGER.debug(f"Trying to SET POSITION {position} cover {self.name}! _state={self._state}")
         self._hub.cover_position(self._id, position)
 
-    def open_cover(self, **kwargs):
+    def open_cover(self, stopping=False, **kwargs):
         _LOGGER.debug(f"Trying to OPEN cover {self.name}! _state={self._state}")
         self._hub.cover_up(self._id)
-        # self._state == STATE_OPENING
+        if not stopping:
+            self._state == STATE_OPENING
+        self.async_schedule_update_ha_state()
 
-    def close_cover(self, **kwargs):
+    def close_cover(self, stopping=False, **kwargs):
         _LOGGER.debug(f"Trying to CLOSE cover {self.name}! _state={self._state}")
         self._hub.cover_down(self._id)
-        # self._state = STATE_CLOSING
+        if not stopping:
+            self._state = STATE_CLOSING
+        self.async_schedule_update_ha_state()
     
     def update_state(self, state, position):
         super().update_state(state)
@@ -68,6 +72,6 @@ class ComelitCover(ComelitDevice, CoverEntity):
     def stop_cover(self, **kwargs):
         _LOGGER.debug(f"Trying to STOP cover {self.name}! is_opening={self.is_opening}, is_closing={self.is_closing}")
         if self.is_opening:
-            self.close_cover()
+            self.close_cover(stopping=True)
         elif self.is_closing:
-            self.open_cover()
+            self.open_cover(stopping=True)

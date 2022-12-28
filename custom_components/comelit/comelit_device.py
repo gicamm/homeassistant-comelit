@@ -34,6 +34,7 @@ class ComelitDevice(Entity):
         return self._is_available
 
     def update_state(self, state):
+        #TODO optiluca: make this more general and use it for all derived classes
         old = self._state
         self._state = state
         if old != state:
