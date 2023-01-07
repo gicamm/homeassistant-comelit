@@ -334,9 +334,16 @@ class ComelitHub:
 
             measured_humidity = float(data[HubFields.HUMIDITY])
 
-            state = bool(int(data[HubFields.STATUS]))
+            is_enabled = int(data['auto_man']) == 2
+            is_heating = bool(int(data[HubFields.STATUS]))
+            
+            state_dict = {'is_enabled': is_enabled,
+            'is_heating': is_heating,
+            'measured_temperature': measured_temp,
+            'target_temperature': target,
+            'measured_humidity': measured_humidity}
 
-            climate = ComelitClimate(id, description, state, measured_temp, target, measured_humidity, CommandHub(self))
+            climate = ComelitClimate(id, description, state_dict, CommandHub(self))
 
             name = climate.entity_name
             if climate.name not in self.climates:  # Add the new sensor
@@ -345,7 +352,7 @@ class ComelitHub:
                     self.climates[name] = climate
                     _LOGGER.info("added the climate %s", name)
             else:
-                self.climates[name].update_state(state, measured_temp, target, measured_humidity)
+                self.climates[name].update_state(state_dict)
                 _LOGGER.debug("updated the climate %s", name)
         except Exception as e:
             _LOGGER.exception("Error updating climate %s", e)

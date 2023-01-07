@@ -11,6 +11,9 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import (
     ATTR_TEMPERATURE,
     TEMP_CELSIUS,
+    STATE_OFF,
+    STATE_IDLE,
+    STATE_ON
 )
 
 from .const import DOMAIN
@@ -26,17 +29,14 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     _LOGGER.info("Comelit Climate Integration started")
 
 class ComelitClimate(ComelitDevice, ClimateEntity):
-    def __init__(self, id, description, state, measured_temperature, target_temperature, measured_humidity, hub):
+    def __init__(self, id, description, state_dict, hub):
         ComelitDevice.__init__(self, id, "climate", description)
         self._hub = hub
-        self._state = state
-        self._temperature = measured_temperature
-        self._target_temperature = target_temperature
-        self._humidity = measured_humidity
+        self._state = state_dict
 
     @property
     def hvac_mode(self):
-        return HVACMode.HEAT if self._state else HVACMode.OFF
+        return HVACMode.HEAT if self._state['is_heating'] else HVACMode.OFF
 
     @property
     def hvac_modes(self):
@@ -44,14 +44,14 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
 
     @property
     def hvac_action(self):
-        if self._state:
+        if self._state['is_heating']:
             return HVACAction.HEATING
         else:
-            return HVACAction.IDLE if self._target_temperature else HVACAction.OFF
+            return HVACAction.IDLE if self._state['is_enabled'] else HVACAction.OFF
 
     @property
     def target_temperature(self):
-        return self._target_temperature
+        return self._state['target_temperature']
 
     @property
     def temperature_unit(self):
@@ -59,11 +59,11 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
 
     @property
     def current_temperature(self):
-        return self._temperature
+        return self._state['measured_temperature']
 
     @property
     def current_humidity(self):
-        return self._humidity
+        return self._state['measured_humidity']
 
     @property
     def supported_features(self):
@@ -73,18 +73,17 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
         temperature = kwargs.get(ATTR_TEMPERATURE)
         if temperature is not None:
             self._hub.climate_set_temperature(self._id, temperature)
-            self.schedule_update_ha_state()
+            self._state['target_temperature'] = temperature
+            self.async_schedule_update_ha_state()
 
     def set_hvac_mode(self, hvac_mode):
         self._hub.climate_set_state(self._id, hvac_mode == HVACMode.HEAT)
-        self.schedule_update_ha_state()
-
-    def update_state(self, state, temperature, target_temperature, humidity):
-        self._state = state
-        self._target_temperature = target_temperature
-        self._temperature = temperature
-        self._humidity = humidity
-        self.async_write_ha_state()
-
+        self.async_schedule_update_ha_state()
+        
     def update(self):
         pass
+
+    @property
+    def state(self):
+        state_mapping = {HVACAction.HEATING: STATE_ON, HVACAction.IDLE: STATE_IDLE, HVACAction.OFF: STATE_OFF}
+        return state_mapping[self.hvac_action]
