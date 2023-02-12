@@ -53,6 +53,7 @@ class HubFields:
     DATA = 'data'
     PARAMETER_NAME = 'param_name'
     PARAMETER_VALUE = 'param_value'
+    SUB_TYPE = 'sub_type'
 
 
 class HubClasses:
@@ -332,16 +333,16 @@ class ComelitHub:
             target = format(float(data[HubFields.TARGET_TEMPERATURE]), '.1f')
             target = float(target) / 10
 
-            measured_humidity = float(data[HubFields.HUMIDITY])
-
             is_enabled = int(data['auto_man']) == 2
             is_heating = bool(int(data[HubFields.STATUS]))
-            
             state_dict = {'is_enabled': is_enabled,
             'is_heating': is_heating,
             'measured_temperature': measured_temp,
-            'target_temperature': target,
-            'measured_humidity': measured_humidity}
+            'target_temperature': target}
+
+            # support sensors without humidity
+            if HubFields.HUMIDITY in data:
+                state_dict['measured_humidity'] = float(data[HubFields.HUMIDITY])
 
             climate = ComelitClimate(id, description, state_dict, CommandHub(self))
 
@@ -355,7 +356,7 @@ class ComelitHub:
                 self.climates[name].update_state(state_dict)
                 _LOGGER.debug("updated the climate %s", name)
         except Exception as e:
-            _LOGGER.exception("Error updating climate %s", e)
+            _LOGGER.exception("Error updating climate %s %s", e, data)
 
     def update_light(self, id, description, data):
         try:
@@ -472,7 +473,9 @@ class ComelitHub:
                 elif HubClasses.TEMPERATURE in id:  
                     description = item[HubFields.DESCRIPTION]
                     self.update_sensor(id, description, item)
-                    self.update_climate(id, description, item)
+                    # skip creating the climate sensor for the PT100 sensor
+                    if HubFields.SUB_TYPE in item and item["sub_type"] == 16:
+                        self.update_climate(id, description, item)
                 elif HubClasses.LIGHT in id:
                     description = item[HubFields.DESCRIPTION]
                     self.update_light(id, description, item)
