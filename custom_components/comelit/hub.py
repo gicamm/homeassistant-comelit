@@ -13,6 +13,7 @@ from .sensor import PowerSensor, TemperatureSensor, HumiditySensor
 from .light import ComelitLight
 from .cover import ComelitCover
 from .switch import ComelitSwitch
+from .climate import ComelitClimate
 import logging
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ class RequestType:
     STATUS = 0
     LIGHT = 1
     AUTOMATION = 1
+    TEMPERATURE = 1
     COVER = 1
     SCENARIO = 1
     ANNOUNCE = 13
@@ -39,6 +41,7 @@ class RequestType:
 class HubFields:
     TOKEN = 'sessiontoken'
     TEMPERATURE = 'temperatura'
+    TARGET_TEMPERATURE = 'soglia_attiva'
     HUMIDITY = 'umidita'
     DESCRIPTION = 'descrizione'
     INSTANT_POWER = 'instant_power'
@@ -152,6 +155,22 @@ class CommandHub:
     def cover_down(self, id):
         self.off(RequestType.COVER, id)
 
+    def climate_set_temperature(self, id, temperature):
+        try:
+            _LOGGER.info(f'Setting climate {id} to temperature {temperature}')
+            req = {"req_type": RequestType.TEMPERATURE, "req_sub_type": 3, "obj_id": id, "act_type": 2, "act_params": [int(temperature*10)]}
+            self._hub.publish(req)
+        except Exception as e:
+            _LOGGER.exception("Error setting temperature %s", e)
+
+    def climate_set_state(self, id, state):
+        try:
+            _LOGGER.info(f'Setting climate {id} to state {state}')
+            req = {"req_type": RequestType.TEMPERATURE, "req_sub_type": 3, "obj_id": id, "act_type": 0, "act_params": [int(state)]}
+            self._hub.publish(req)
+        except Exception as e:
+            _LOGGER.exception("Error setting climate state %s", e)
+
 
 # Manage scenario
 class SceneHub:
@@ -173,6 +192,7 @@ class ComelitHub:
     def __init__(self, client_name, hub_serial, hub_host, mqtt_port, mqtt_user, mqtt_password, hub_user, hub_password, scan_interval):
         """Initialize the sensor."""
         self.sensors = {}
+        self.climates = {}
         self.lights = {}
         self.covers = {}
         self.scenes = {}
@@ -212,14 +232,23 @@ class ComelitHub:
         try:
             req_type = payload["req_type"]
 
+            if req_type == RequestType.STATUS:
+                _LOGGER.debug(f"Dispatching {payload}")
+            else:
+                _LOGGER.info(f"Dispatching {payload}")
+
             options = {
                 RequestType.ANNOUNCE: self.manage_announce,
                 RequestType.LOGIN: self.token,
                 RequestType.STATUS: self.status,
                 RequestType.PARAMETERS: self.parse_parameters,
             }
-            options[req_type](payload)
+
+            # I'm not 100% sure what these do, and I'm not sure why I wasn't seeing errors before.
+            if req_type in options:
+                options[req_type](payload)
         except Exception as e:
+            _LOGGER.error(f"Error dispatching {payload}")
             _LOGGER.error(e)
 
     def manage_announce(self, payload):
@@ -293,6 +322,41 @@ class ComelitHub:
             self.sensors[name].update_state(value)
             _LOGGER.debug("updated the sensor %s", name)
 
+    def update_climate(self, id, description, data):
+        try:
+            assert HubClasses.TEMPERATURE in id
+            _LOGGER.debug("update_climate: %s has data %s", description, data)
+            measured_temp = format(float(data[HubFields.TEMPERATURE]), '.1f')
+            measured_temp = float(measured_temp) / 10
+
+            target = format(float(data[HubFields.TARGET_TEMPERATURE]), '.1f')
+            target = float(target) / 10
+
+            measured_humidity = float(data[HubFields.HUMIDITY])
+
+            is_enabled = int(data['auto_man']) == 2
+            is_heating = bool(int(data[HubFields.STATUS]))
+            
+            state_dict = {'is_enabled': is_enabled,
+            'is_heating': is_heating,
+            'measured_temperature': measured_temp,
+            'target_temperature': target,
+            'measured_humidity': measured_humidity}
+
+            climate = ComelitClimate(id, description, state_dict, CommandHub(self))
+
+            name = climate.entity_name
+            if climate.name not in self.climates:  # Add the new sensor
+                if hasattr(self, 'climate_add_entities'):
+                    self.climate_add_entities([climate])
+                    self.climates[name] = climate
+                    _LOGGER.info("added the climate %s", name)
+            else:
+                self.climates[name].update_state(state_dict)
+                _LOGGER.debug("updated the climate %s", name)
+        except Exception as e:
+            _LOGGER.exception("Error updating climate %s", e)
+
     def update_light(self, id, description, data):
         try:
             _LOGGER.debug("update_light: %s has data %s", description, data)
@@ -315,7 +379,7 @@ class ComelitHub:
                     self.lights[id] = light
                     _LOGGER.info("added the light %s %s", description, light.entity_name)
             else:
-                _LOGGER.debug("updating the light %s %s", description, light.entity_name)
+                _LOGGER.debug(f"updating the light {description} {light.entity_name} with state {state}")
                 self.lights[id].update_state(state)
         except Exception as e:
             _LOGGER.exception("Error updating light %s", e)
@@ -384,6 +448,7 @@ class ComelitHub:
     def update_entities(self, elements):
         try:
             for item in elements:
+                _LOGGER.debug("processing item %s", item)
 
                 id = item[HubFields.ID]
 
@@ -401,9 +466,13 @@ class ComelitHub:
                 except Exception:
                     item = item
 
-                if HubClasses.POWER_CONSUMPTION in id or HubClasses.FTV in id or HubClasses.TEMPERATURE in id:  # Sensor
+                if HubClasses.POWER_CONSUMPTION in id or HubClasses.FTV in id:
                     description = item[HubFields.DESCRIPTION]
                     self.update_sensor(id, description, item)
+                elif HubClasses.TEMPERATURE in id:  
+                    description = item[HubFields.DESCRIPTION]
+                    self.update_sensor(id, description, item)
+                    self.update_climate(id, description, item)
                 elif HubClasses.LIGHT in id:
                     description = item[HubFields.DESCRIPTION]
                     self.update_light(id, description, item)
@@ -422,6 +491,7 @@ class ComelitHub:
                 else:
                     continue
         except Exception as e:
+            _LOGGER.error("Update entities error")
             _LOGGER.error(e)
 
     def status(self, payload):
@@ -429,8 +499,16 @@ class ComelitHub:
             elements = payload["out_data"][0][HubFields.ELEMENTS]
             self.update_entities(elements)
         except Exception as e:
+            _LOGGER.error("Status error")
             _LOGGER.error(e)
 
+def update_status(hub):
+    try:
+        req = {"req_type": RequestType.STATUS, "req_sub_type": -1, "obj_id": "GEN#17#13#1", "detail_level": 1}
+        hub.publish(req)
+    except Exception as e:
+        _LOGGER.error("Error updating status")
+        _LOGGER.error(e)
 
 # Make a request for status
 class StatusUpdater (Thread):
@@ -441,19 +519,21 @@ class StatusUpdater (Thread):
         self.hub = hub
 
     def run(self):
-        parameters_timer = 0
+        # parameters_timer = 0
         _LOGGER.debug("Comelit Hub status snapshot started")
         while True:
             if self.hub.sessiontoken == "":
                 continue
 
+            # optiluca: does not do anything?
+            '''
             if parameters_timer == 0:
                 {"req_type": 8, "seq_id": 5, "req_sub_type": 23, "param_type": 2, "agent_type": 0,
                  "sessiontoken": "1367343208"}
                 parameters_timer = 30
+            '''
 
-            req = {"req_type": RequestType.STATUS, "req_sub_type": -1, "obj_id": "GEN#17#13#1", "detail_level": 1}
-            self.hub.publish(req)
+            update_status(self.hub)
             time.sleep(self._scan_interval)
-            parameters_timer = parameters_timer - 1
+            # parameters_timer = parameters_timer - 1
 

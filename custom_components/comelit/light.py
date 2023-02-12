@@ -4,7 +4,7 @@ import logging
 # Import the device class from the component that you want to support
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS, PLATFORM_SCHEMA, LightEntity, COLOR_MODE_BRIGHTNESS)
-from homeassistant.const import STATE_ON
+from homeassistant.const import STATE_ON, STATE_OFF
 
 from .const import DOMAIN
 from .comelit_device import ComelitDevice
@@ -50,6 +50,11 @@ class ComelitLight(ComelitDevice, LightEntity):
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = kwargs[ATTR_BRIGHTNESS]
         self._light.light_on(self._id, self._brightness)
+        self._state = STATE_ON # Immediately update the state, don't wait for the next update
+        self.schedule_update_ha_state()
+        
 
     def turn_off(self, **kwargs):
         self._light.light_off(self._id)
+        self._state = STATE_OFF # Immediately update the state, don't wait for the next update
+        self.schedule_update_ha_state()

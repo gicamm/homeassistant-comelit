@@ -36,6 +36,7 @@ class ComelitVedo:
 
     def __init__(self, host, port, password, scan_interval):
         """Initialize the sensor."""
+        _LOGGER.info(f"Initialising ComelitVedo with host {host}, port {port}")
         self.sensors = {}
         self.areas = {}
         self.host = host
@@ -63,12 +64,15 @@ class ComelitVedo:
             url = "http://{0}:{1}/{2}&_={3}".format(self.host, self.port, path, millis)
         else:
             url = "http://{0}:{1}/{2}?_={3}".format(self.host, self.port, path, millis)
+        _LOGGER.info(f"Build URL: {url}")
         return url, headers
 
     # Do the GET from the vedo IP
     @timeout(DEFAULT_TIMEOUT, use_signals=True)
     def get(self, uid,  path, is_response):
+        _LOGGER.info(f"Running GET with uid {uid}, path {path}")
         url, headers = self.build_http(None, uid, path)
+        _LOGGER.info(f"GET: url {url}, headers {headers}")
         response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
         response.raise_for_status()
         text = response.text
@@ -94,10 +98,13 @@ class ComelitVedo:
         if response.status_code == 200:
             uid = response.headers.get('set-cookie')
             if uid is not None:
+                _LOGGER.info("Logged in, %s", response.text)
                 return uid
             else:
                 _LOGGER.warning("Error doing the login %s", response.text)
                 raise Exception("Unable to obtain the cookie")
+        else:
+            _LOGGER.error("Bad login response! - %s", response.text)
 
     # Do the logout. Ignore errors
     def logout(self, uid):
@@ -163,6 +170,7 @@ class ComelitVedo:
 
     # update the alarm area
     def update_area(self, area):
+        _LOGGER.info(f"Updating the alarm area {area}")
         try:
             id = area["id"]
             name = area["name"]
@@ -187,7 +195,7 @@ class ComelitVedo:
 
 # Update the binary sensors
 class SensorUpdater (Thread):
-    def __init__(self, name, scan_interval, vedo):
+    def __init__(self, name, scan_interval, vedo: ComelitVedo):
         Thread.__init__(self)
         self.name = name
         self._scan_interval = scan_interval
@@ -234,7 +242,9 @@ class SensorUpdater (Thread):
                         raise Exception("cookie expired")
 
                     if value > 1:
-                        sensors.append({"index": i, "id": i, "name": description[i], "status": zone_statuses[i]})
+                        sensor_dict = {"index": i, "id": i, "name": description[i], "status": zone_statuses[i]}
+                        _LOGGER.info(f"Adding {sensor_dict}")
+                        sensors.append(sensor_dict)
 
                 if self._uid is not None:
                     # for sensor in sensors:
@@ -267,7 +277,7 @@ class SensorUpdater (Thread):
                         self._vedo.update_area(area)
 
             except Exception as e:
-                _LOGGER.debug("Error getting data %s", e)
+                _LOGGER.error("Error getting data! %s", e)
                 self.logout()
             finally:
                 time.sleep(self._scan_interval)
