@@ -1,6 +1,6 @@
-# Comelit Hub/Vedo integration
+# Comelit SimpleHome/Vedo integration for Home Assistant
 
-With Comelit Hub/Vedo integration, you can connect your Home Assistant instance to Comelit Simple Home and Vedo systems.
+With Comelit SimpleHome/Vedo integration, you can connect your Home Assistant instance to Comelit Simple Home and Vedo systems.
 
 For more information, see the [Wiki](https://github.com/gicamm/homeassistant-comelit/wiki).
 
