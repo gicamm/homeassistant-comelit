@@ -35,7 +35,7 @@ comelit:
 #### Comelit app
 - Open the Comelit app
 - Scan for a new hub device
-- Copy the serial
+- Copy the serial (remove all non-numeric characters, i.e. 'hsrv-0123456789' -> '0123456789' )
 
 For more information, see the [Wiki](https://github.com/gicamm/homeassistant-comelit/wiki).
 
@@ -44,6 +44,7 @@ For more information, see the [Wiki](https://github.com/gicamm/homeassistant-com
 - Shutters
 - Energy Production
 - Energy Consumption
+- Clima
 - Temperature/Humidity
 - Automation
 - Scenario
@@ -78,28 +79,40 @@ Below is an example with lovelace:
   - entity: sensor.comelit_power_cons
     name: Consume
 
-# door lock
+    # door lock
   - entity: scene.comelit_doorlock
     name: Door lock
     icon: mdi:key
 
-# clima
-  - entity: switch.comelit_switch_clima
-    name: Clima
+    # switch
+  - entity: switch.comelit_switch1
+    name: Switch1
 
-# humidity
+    # clima
+  - entity: climate.comelit_bathroom
+    name: Bathroom
+  - entity: climate.comelit_living
+    name: Living
+
+    # humidity
   - entity: sensor.comelit_humidity_bathroom
     name: Bathroom
   - entity: sensor.comelit_humidity_living
     name: Living
 
-# shutters
+    # temperature
+  - entity: sensor.comelit_temperature_bathroom
+    name: Bathroom
+  - entity: sensor.comelit_temperature_living
+    name: Living
+
+    # shutters
   - entity: cover.comelit_living
     name: Living
   - entity: cover.comelit_kitchen_sx
     name: Kitchen
 
-# vedo Alarm
+    # vedo Alarm
   - entity: binary_sensor.comelit_vedo_garage
     name: Garage
   - entity: alarm_control_panel.comelit_vedo_garage

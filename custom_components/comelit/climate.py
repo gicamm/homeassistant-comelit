@@ -23,10 +23,10 @@ from .comelit_device import ComelitDevice
 _LOGGER = logging.getLogger(__name__)
 
 
-
 def setup_platform(hass, config, add_entities, discovery_info=None):
     hass.data[DOMAIN]['hub'].climate_add_entities = add_entities
     _LOGGER.info("Comelit Climate Integration started")
+
 
 class ComelitClimate(ComelitDevice, ClimateEntity):
     def __init__(self, id, description, state_dict, hub):
