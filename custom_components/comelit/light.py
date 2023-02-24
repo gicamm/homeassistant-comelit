@@ -53,7 +53,6 @@ class ComelitLight(ComelitDevice, LightEntity):
         self._state = STATE_ON # Immediately update the state, don't wait for the next update
         self.schedule_update_ha_state()
         
-
     def turn_off(self, **kwargs):
         self._light.light_off(self._id)
         self._state = STATE_OFF # Immediately update the state, don't wait for the next update

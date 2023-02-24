@@ -1,4 +1,4 @@
-"""Comelit Hub/Vedo integration."""
+"""Comelit SimpleHome/Vedo integration."""
 
 import logging
 import voluptuous as vol
@@ -39,7 +39,7 @@ def setup(hass, config):
     hass.data[DOMAIN] = {}
     hass.data[DOMAIN]['conf'] = conf
 
-    # Comelit Hub
+    # Comelit SimpleHome Hub
     if 'hub' in conf:
         hub_conf = conf["hub"]
         if hub_conf is not None:
@@ -62,7 +62,7 @@ def setup(hass, config):
             hass.helpers.discovery.load_platform('scene', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('switch', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('climate', DOMAIN, {}, config)
-            _LOGGER.info("Comelit Hub integration started")
+            _LOGGER.info("Comelit SimpleHome integration started")
 
     # Comelit Vedo
     if 'vedo' in conf:
