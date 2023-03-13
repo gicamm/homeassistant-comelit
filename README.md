@@ -1,14 +1,18 @@
 # Comelit SimpleHome/Vedo integration for Home Assistant
 
-With Comelit SimpleHome/Vedo integration, you can connect your Home Assistant instance to Comelit Simple Home and Vedo systems.
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=gicamm&repository=homeassistant-comelit&category=integration)
+
+Comelit SimpleHome/Vedo integration lets you connect your Home Assistant instance to Comelit Simple Home and Vedo
+systems.
 
 For more information, see the [Wiki](https://github.com/gicamm/homeassistant-comelit/wiki).
 
 ### Installation
 
-Copy this folder to `<config_dir>/custom_components/comelit/`.
-
-Add the following to your `configuration.yaml` file:
+- Install
+  using [HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=gicamm&repository=homeassistant-comelit&category=integration) (
+  Or copy the contents of `custom_components/comelit/` to `<your config dir>/custom_components/comelit/`.)
+- Add the following to your `<your config dir>/configuration.yaml` file:
 
 ```yaml
 # Comelit Hub/Vedo
@@ -30,9 +34,13 @@ comelit:
     scan_interval: 30
 
 ```
+
+- Restart Home Assistant
+
 ### How to find the hub serial?
 
 #### Comelit app
+
 - Open the Comelit app
 - Scan for a new hub device
 - Copy the serial (remove all non-numeric characters, i.e. 'hsrv-0123456789' -> '0123456789' )
@@ -50,16 +58,16 @@ For more information, see the [Wiki](https://github.com/gicamm/homeassistant-com
 - Scenario
 - Alarm
 
-The integration also exports the alarm sensor as a presence detector. 
-It allows presence-based lights, scenes, and so on.
-
+The integration also exports the alarm sensor as a presence detector. It allows presence-based lights, scenes, and so
+on.
 
 #### Comelit scenario
-The integration supports the comelit scenario. It exports the scenario as a scene. 
-A scene can be useful for exporting some VIP features (such as open the door) which, otherwise, 
-cannot be fully reachable through the Hub.  
+
+The integration supports the comelit scenario. It exports the scenario as a scene. A scene can be useful for exporting
+some VIP features (such as opening the door) which, otherwise, cannot be fully reachable through the Hub.
 
 ### Lovelace example
+
 Below is an example with lovelace:
 
 ```yaml
