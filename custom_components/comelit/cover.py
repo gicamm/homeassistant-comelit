@@ -42,11 +42,11 @@ class ComelitCover(ComelitDevice, CoverEntity):
 
     @property
     def current_cover_position(self):  # -> int | None:
-        return self._position
+        return 100 - self._position
     
     def set_cover_position(self, position, **kwargs):
         _LOGGER.debug(f"Trying to SET POSITION {position} cover {self.name}! _state={self._state}")
-        self._hub.cover_position(self._id, position)
+        self._hub.cover_position(self._id, 100 - position)
 
     def open_cover(self, stopping=False, **kwargs):
         _LOGGER.debug(f"Trying to OPEN cover {self.name}! _state={self._state}")
