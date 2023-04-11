@@ -53,6 +53,7 @@ class HubFields:
     DATA = 'data'
     PARAMETER_NAME = 'param_name'
     PARAMETER_VALUE = 'param_value'
+    SUB_TYPE = 'sub_type'
 
 
 class HubClasses:
@@ -232,11 +233,6 @@ class ComelitHub:
         try:
             req_type = payload["req_type"]
 
-            if req_type == RequestType.STATUS:
-                _LOGGER.debug(f"Dispatching {payload}")
-            else:
-                _LOGGER.info(f"Dispatching {payload}")
-
             options = {
                 RequestType.ANNOUNCE: self.manage_announce,
                 RequestType.LOGIN: self.token,
@@ -244,7 +240,7 @@ class ComelitHub:
                 RequestType.PARAMETERS: self.parse_parameters,
             }
 
-            # I'm not 100% sure what these do, and I'm not sure why I wasn't seeing errors before.
+            # discard unrecognized types
             if req_type in options:
                 options[req_type](payload)
         except Exception as e:
@@ -253,7 +249,7 @@ class ComelitHub:
 
     def manage_announce(self, payload):
         self.agent_id = payload['out_data'][0]["agent_id"]
-        _LOGGER.debug("agent id is %s", self.agent_id)
+        _LOGGER.debug("Announce. Agent id is %s", self.agent_id)
         req = {"req_type": RequestType.LOGIN, "req_sub_type": -1, "agent_type": 0, "user_name": self.hub_user,
                "password": self.hub_password}
         self.publish(req)
@@ -332,16 +328,16 @@ class ComelitHub:
             target = format(float(data[HubFields.TARGET_TEMPERATURE]), '.1f')
             target = float(target) / 10
 
-            measured_humidity = float(data[HubFields.HUMIDITY])
-
             is_enabled = int(data['auto_man']) == 2
             is_heating = bool(int(data[HubFields.STATUS]))
-            
             state_dict = {'is_enabled': is_enabled,
             'is_heating': is_heating,
             'measured_temperature': measured_temp,
-            'target_temperature': target,
-            'measured_humidity': measured_humidity}
+            'target_temperature': target}
+
+            # support sensors without humidity
+            if HubFields.HUMIDITY in data:
+                state_dict['measured_humidity'] = float(data[HubFields.HUMIDITY])
 
             climate = ComelitClimate(id, description, state_dict, CommandHub(self))
 
@@ -355,7 +351,7 @@ class ComelitHub:
                 self.climates[name].update_state(state_dict)
                 _LOGGER.debug("updated the climate %s", name)
         except Exception as e:
-            _LOGGER.exception("Error updating climate %s", e)
+            _LOGGER.exception("Error updating climate %s %s", e, data)
 
     def update_light(self, id, description, data):
         try:
@@ -472,7 +468,9 @@ class ComelitHub:
                 elif HubClasses.TEMPERATURE in id:  
                     description = item[HubFields.DESCRIPTION]
                     self.update_sensor(id, description, item)
-                    self.update_climate(id, description, item)
+                    # skip creating the climate sensor for the PT100 sensor
+                    if HubFields.SUB_TYPE in item and item["sub_type"] == 16:
+                        self.update_climate(id, description, item)
                 elif HubClasses.LIGHT in id:
                     description = item[HubFields.DESCRIPTION]
                     self.update_light(id, description, item)
@@ -495,6 +493,7 @@ class ComelitHub:
             _LOGGER.error(e)
 
     def status(self, payload):
+        _LOGGER.debug(f"Dispatching status {payload}")
         try:
             elements = payload["out_data"][0][HubFields.ELEMENTS]
             self.update_entities(elements)
@@ -502,13 +501,16 @@ class ComelitHub:
             _LOGGER.error("Status error")
             _LOGGER.error(e)
 
+
 def update_status(hub):
     try:
+        _LOGGER.debug("Publishing the status request")
         req = {"req_type": RequestType.STATUS, "req_sub_type": -1, "obj_id": "GEN#17#13#1", "detail_level": 1}
         hub.publish(req)
     except Exception as e:
         _LOGGER.error("Error updating status")
         _LOGGER.error(e)
+
 
 # Make a request for status
 class StatusUpdater (Thread):
@@ -524,14 +526,6 @@ class StatusUpdater (Thread):
         while True:
             if self.hub.sessiontoken == "":
                 continue
-
-            # optiluca: does not do anything?
-            '''
-            if parameters_timer == 0:
-                {"req_type": 8, "seq_id": 5, "req_sub_type": 23, "param_type": 2, "agent_type": 0,
-                 "sessiontoken": "1367343208"}
-                parameters_timer = 30
-            '''
 
             update_status(self.hub)
             time.sleep(self._scan_interval)

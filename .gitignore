@@ -1,2 +1,7 @@
-*venv
+.coverage
+.idea
+.venv
+.vscode/
 __pycache__
+pythonenv*
+venv/

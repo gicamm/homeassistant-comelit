@@ -1,0 +1,16 @@
+## SUB
+mosquitto_sub -v -h $IP -p $PORT -u "hsrv-user" -P "sf1nE9bjPc" -t 'HSrv/$SERIAL/tx/test'
+
+
+## LOGIN
+mosquitto_pub -h $IP -p $PORT -u "hsrv-user" -P "sf1nE9bjPc" -t 'HSrv/$SERIAL/rx/gc' -m '{"req_type": RequestType.LOGIN, "req_sub_type": -1, "agent_type": 0, "user_name": $USERNAME,"password": $PWD}'
+
+
+
+Read the session ID from the response
+HSrv/$SERIAL/tx/gc {"req_type":5,"req_sub_type":-1,"seq_id":0,"req_result":0,"uid":".....","sessiontoken":"......"}
+
+Then use that session ID for publishing messages
+
+#Turn light ON
+mosquitto_pub -h $IP -p $PORT -u "hsrv-user" -P "sf1nE9bjPc" -t 'HSrv/$SERIAL/rx/gc' -m '{"req_type": 1, "req_sub_type": 3, "obj_id": "DOM#LT#24.1", "act_type": 0, "act_params": [1], "seq_id": 8321, "agent_id": 10, "sessiontoken": "....."}''

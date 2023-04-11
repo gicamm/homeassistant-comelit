@@ -170,7 +170,7 @@ class ComelitVedo:
 
     # update the alarm area
     def update_area(self, area):
-        _LOGGER.info(f"Updating the alarm area {area}")
+        _LOGGER.debug(f"Updating the alarm area {area}")
         try:
             id = area["id"]
             name = area["name"]
@@ -243,7 +243,7 @@ class SensorUpdater (Thread):
 
                     if value > 1:
                         sensor_dict = {"index": i, "id": i, "name": description[i], "status": zone_statuses[i]}
-                        _LOGGER.info(f"Adding {sensor_dict}")
+                        _LOGGER.debug(f"Updating the zone {sensor_dict}")
                         sensors.append(sensor_dict)
 
                 if self._uid is not None:

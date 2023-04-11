@@ -25,6 +25,8 @@ class ComelitCover(ComelitDevice, CoverEntity):
         self._hub = hub
         if position != -1:
             self._position = position
+        else:
+            self._position = None
 
     @property
     def is_closed(self):
