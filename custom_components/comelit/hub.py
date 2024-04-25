@@ -207,7 +207,7 @@ class ComelitHub:
         self.mqtt_user = mqtt_user
         self.mqtt_port = mqtt_port
         self.hub_user = hub_user
-        self.hub_password = hub_password
+        self.hub_password = str(hub_password)
         self.mqtt_password = mqtt_password
         self._scan_interval = scan_interval
         self._vedo = None
