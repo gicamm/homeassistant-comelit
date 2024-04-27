@@ -63,7 +63,7 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
 
     @property
     def current_humidity(self):
-        return self._state['measured_humidity']
+        return self._state.get('measured_humidity', None)
 
     @property
     def supported_features(self):
