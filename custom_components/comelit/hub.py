@@ -468,8 +468,8 @@ class ComelitHub:
                 elif HubClasses.TEMPERATURE in id:  
                     description = item[HubFields.DESCRIPTION]
                     self.update_sensor(id, description, item)
-                    # skip creating the climate sensor for the PT100 sensor
-                    if HubFields.SUB_TYPE in item and item["sub_type"] == 16:
+                    # skip creating the climate sensor for the PT100 sensor and add compatibility for ONE
+                    if HubFields.SUB_TYPE in item and (item["sub_type"] == 16 or item["sub_type"] == 12):# skip creating the climate sensor for the PT100 sensor
                         self.update_climate(id, description, item)
                 elif HubClasses.LIGHT in id:
                     description = item[HubFields.DESCRIPTION]
