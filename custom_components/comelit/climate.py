@@ -74,11 +74,11 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
         if temperature is not None:
             self._hub.climate_set_temperature(self._id, temperature)
             self._state['target_temperature'] = temperature
-            self.async_schedule_update_ha_state()
+            self.schedule_update_ha_state()
 
     def set_hvac_mode(self, hvac_mode):
         self._hub.climate_set_state(self._id, hvac_mode == HVACMode.HEAT)
-        self.async_schedule_update_ha_state()
+        self.schedule_update_ha_state()
         
     def update(self):
         pass

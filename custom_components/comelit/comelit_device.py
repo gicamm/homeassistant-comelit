@@ -38,7 +38,7 @@ class ComelitDevice(Entity):
         old = self._state
         self._state = state
         if old != state:
-            self.async_schedule_update_ha_state()
+            self.schedule_update_ha_state()
 
     @property
     def state(self):
