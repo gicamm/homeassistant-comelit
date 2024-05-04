@@ -42,8 +42,11 @@ class ComelitCover(ComelitDevice, CoverEntity):
 
     @property
     def current_cover_position(self):  # -> int | None:
-        return 100 - self._position
-    
+        if self._position: # if not None:
+            return 100 - self._position
+        else:
+            return self._position
+            
     def set_cover_position(self, position, **kwargs):
         _LOGGER.debug(f"Trying to SET POSITION {position} cover {self.name}! _state={self._state}")
         self._hub.cover_position(self._id, 100 - position)
