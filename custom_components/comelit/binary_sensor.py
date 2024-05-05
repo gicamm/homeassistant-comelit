@@ -1,6 +1,6 @@
 """Platform for sensor integration."""
 import logging
-from homeassistant.components.binary_sensor import BinarySensorEntity, DEVICE_CLASS_PRESENCE, DEVICE_CLASS_MOTION
+from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.const import STATE_ON
 
 from .comelit_device import ComelitDevice
@@ -29,5 +29,4 @@ class VedoSensor(ComelitDevice, BinarySensorEntity):
 
     @property
     def device_class(self):
-        return DEVICE_CLASS_MOTION
-
+        return BinarySensorDeviceClass.MOTION

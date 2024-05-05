@@ -4,7 +4,6 @@ import json
 import time
 import requests
 import logging
-import signal
 from threading import Thread
 from wrapt_timeout_decorator import *
 from homeassistant.const import STATE_ALARM_DISARMED, STATE_ALARM_ARMED_AWAY, STATE_ON, STATE_OFF

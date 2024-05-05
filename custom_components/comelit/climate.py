@@ -5,15 +5,18 @@ from homeassistant.components.climate import ClimateEntity
 
 from homeassistant.components.climate import HVACMode, HVACAction
 
-from homeassistant.components.climate.const import (
-    SUPPORT_TARGET_TEMPERATURE
+from homeassistant.components.climate import (
+    ClimateEntityFeature
 )
+
 from homeassistant.const import (
     ATTR_TEMPERATURE,
-    TEMP_CELSIUS,
     STATE_OFF,
     STATE_IDLE,
     STATE_ON
+)
+from homeassistant.components.sensor import (
+    UnitOfTemperature,
 )
 
 from .const import DOMAIN
@@ -55,7 +58,7 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
 
     @property
     def temperature_unit(self):
-        return TEMP_CELSIUS
+        return UnitOfTemperature.CELSIUS
 
     @property
     def current_temperature(self):
@@ -67,7 +70,7 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
 
     @property
     def supported_features(self):
-        return SUPPORT_TARGET_TEMPERATURE
+        return ClimateEntityFeature.TARGET_TEMPERATURE
 
     def set_temperature(self, **kwargs):
         temperature = kwargs.get(ATTR_TEMPERATURE)
