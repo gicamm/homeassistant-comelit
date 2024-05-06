@@ -1,7 +1,7 @@
 """Platform for sensor integration."""
 import logging
 from homeassistant.components.alarm_control_panel import (
-    AlarmControlPanelEntity, SUPPORT_ALARM_ARM_HOME, SUPPORT_ALARM_ARM_AWAY, SUPPORT_ALARM_ARM_NIGHT
+    AlarmControlPanelEntity, AlarmControlPanelEntityFeature
 )
 
 from .const import DOMAIN
@@ -45,5 +45,4 @@ class VedoAlarm(ComelitDevice, AlarmControlPanelEntity):
 
     @property
     def supported_features(self):
-        return SUPPORT_ALARM_ARM_AWAY | SUPPORT_ALARM_ARM_NIGHT
-        # return SUPPORT_ALARM_ARM_HOME | SUPPORT_ALARM_ARM_AWAY | SUPPORT_ALARM_ARM_NIGHT
+        return AlarmControlPanelEntityFeature.ARM_AWAY | AlarmControlPanelEntityFeature.ARM_NIGHT

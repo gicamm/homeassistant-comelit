@@ -1,8 +1,7 @@
 """Platform for light integration."""
-import time
 import logging
 
-from homeassistant.const import STATE_OPEN, STATE_CLOSED, STATE_OPENING, STATE_CLOSING
+from homeassistant.const import STATE_CLOSED, STATE_OPENING, STATE_CLOSING
 
 from .const import DOMAIN
 from homeassistant.components.cover import (CoverEntity)
