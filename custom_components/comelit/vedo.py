@@ -5,7 +5,7 @@ import time
 import requests
 import logging
 from threading import Thread
-from wrapt_timeout_decorator import *
+from wrapt_timeout_decorator import timeout
 from homeassistant.const import STATE_ALARM_DISARMED, STATE_ALARM_ARMED_AWAY, STATE_ON, STATE_OFF
 from .binary_sensor import VedoSensor
 from custom_components.comelit.alarm_control_panel import VedoAlarm

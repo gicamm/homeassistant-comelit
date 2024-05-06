@@ -1,8 +1,14 @@
-# Comelit SimpleHome/Vedo integration for Home Assistant
+# Comelit SimpleHome and Comelit Vedo integration for Home Assistant
+
+[![GitHub Release](https://img.shields.io/github/release/gicamm/homeassistant-comelit.svg?style=flat-square)](https://github.com/gicamm/homeassistant-comelit/releases)
+[![GitHub Release](https://img.shields.io/github/commit-activity/y/gicamm/homeassistant-comelit.svg?style=flat-square)](https://github.com/gicamm/homeassistant-comelit/commits)
+[![Test Coverage](https://img.shields.io/codecov/c/gh/gicamm/homeassistant-comelit?style=flat-square)](https://app.codecov.io/gh/gicamm/homeassistant-comelit/)
+[![License](https://img.shields.io/github/license/gicamm/homeassistant-comelit.svg?style=flat-square)](LICENSE)
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=gicamm&repository=homeassistant-comelit&category=integration)
 
-Comelit SimpleHome/Vedo integration lets you connect your Home Assistant instance to Comelit Simple Home and Vedo
+Comelit SimpleHome and Comelit Vedo integration lets you connect your Home Assistant instance to Comelit Simple Home and
+Vedo
 systems.
 
 For more information, see the [Wiki](https://github.com/gicamm/homeassistant-comelit/wiki).

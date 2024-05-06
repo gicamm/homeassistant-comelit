@@ -6,7 +6,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.const import (CONF_HOST, CONF_USERNAME, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL)
 from .hub import ComelitHub
 from .vedo import ComelitVedo
-from .const import DOMAIN, HUB_DOMAIN, VEDO_DOMAIN, CONF_MQTT_USER, CONF_MQTT_PASSWORD, CONF_SERIAL, CONF_CLIENT
+from .const import DOMAIN, CONF_MQTT_USER, CONF_MQTT_PASSWORD, CONF_SERIAL, CONF_CLIENT
 _LOGGER = logging.getLogger(__name__)
 
 
