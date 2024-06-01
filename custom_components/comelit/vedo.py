@@ -151,7 +151,7 @@ class ComelitVedo:
         try:
             id = s["id"]
             name = s["name"]
-            if s["status"] == "0011":
+            if s["status"] == "0001":
                 state = STATE_ON
             else:
                 state = STATE_OFF
@@ -240,14 +240,14 @@ class SensorUpdater (Thread):
                     if value == 'Not logged':
                         raise Exception("cookie expired")
 
-                    if value > 1:
+                    if value == 1:
                         sensor_dict = {"index": i, "id": i, "name": description[i], "status": zone_statuses[i]}
                         _LOGGER.debug(f"Updating the zone {sensor_dict}")
                         sensors.append(sensor_dict)
 
                 if self._uid is not None:
-                    # for sensor in sensors:
-                    #     self._vedo.update_sensor(sensor)
+                    for sensor in sensors:
+                        self._vedo.update_sensor(sensor)
 
                     p1_pres = areas_desc["p1_pres"]
                     p2_pres = areas_desc["p2_pres"]

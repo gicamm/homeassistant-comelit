@@ -75,7 +75,7 @@ def setup(hass, config):
             scan_interval = schema[CONF_SCAN_INTERVAL]
             vedo = ComelitVedo(vedo_host, vedo_port, vedo_pwd, scan_interval)
             hass.data[DOMAIN]['vedo'] = vedo
-            # hass.helpers.discovery.load_platform('binary_sensor', DOMAIN, {}, config)
+            hass.helpers.discovery.load_platform('binary_sensor', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('alarm_control_panel', DOMAIN, {}, config)
             _LOGGER.info("Comelit Vedo integration started")
 
