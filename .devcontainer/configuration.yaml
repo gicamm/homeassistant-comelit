@@ -1,6 +1,9 @@
 # Loads default set of integrations. Do not remove.
 default_config:
-
+debugpy:
+  start: true
+#  wait: true #Wait until debugger is attached to start execution
+  
 logger:
   default: info
   logs:
