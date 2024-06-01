@@ -48,8 +48,8 @@ comelit:
 #### Comelit app
 
 - Open the Comelit app
-- Scan for a new hub device
-- Copy the serial (remove all non-numeric characters, i.e. 'hsrv-0123456789' -> '0123456789' )
+- Scan for a new hub device (Or if it's already added to the app, check in 'Manage Devices' -> Comelit Hub -> Network Configuration -> ID)
+- Copy the serial (Hub MAC Address) (remove all symbols and hsrv prefix, i.e. "HSRV 00:25:29:17:2D:C2" -> "002529172DC2")
 
 For more information, see the [Wiki](https://github.com/gicamm/homeassistant-comelit/wiki).
 
