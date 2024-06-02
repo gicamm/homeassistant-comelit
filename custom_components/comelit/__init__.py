@@ -3,7 +3,8 @@
 import logging
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import (CONF_HOST, CONF_USERNAME, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL)
+from homeassistant.const import (CONF_HOST, CONF_USERNAME, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL,
+                                 CONF_BINARY_SENSORS)
 from .hub import ComelitHub
 from .vedo import ComelitVedo
 from .const import DOMAIN, CONF_MQTT_USER, CONF_MQTT_PASSWORD, CONF_SERIAL, CONF_CLIENT
@@ -29,7 +30,8 @@ VEDO_SCHEMA = vol.Schema(
         vol.Required(CONF_HOST): cv.string,
         vol.Optional(CONF_PORT, default=80): cv.port,
         vol.Required(CONF_PASSWORD): cv.string,
-        vol.Optional(CONF_SCAN_INTERVAL, default=1): cv.positive_int
+        vol.Optional(CONF_SCAN_INTERVAL, default=1): cv.positive_int,
+        vol.Optional(CONF_BINARY_SENSORS, default=False): cv.boolean
     }
 )
 
@@ -73,9 +75,10 @@ def setup(hass, config):
             vedo_port = schema[CONF_PORT]
             vedo_pwd = schema[CONF_PASSWORD]
             scan_interval = schema[CONF_SCAN_INTERVAL]
-            vedo = ComelitVedo(vedo_host, vedo_port, vedo_pwd, scan_interval)
+            expose_bin_sensors = schema[CONF_BINARY_SENSORS]
+            vedo = ComelitVedo(vedo_host, vedo_port, vedo_pwd, scan_interval, expose_bin_sensors)
             hass.data[DOMAIN]['vedo'] = vedo
-            # hass.helpers.discovery.load_platform('binary_sensor', DOMAIN, {}, config)
+            hass.helpers.discovery.load_platform('binary_sensor', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('alarm_control_panel', DOMAIN, {}, config)
             _LOGGER.info("Comelit Vedo integration started")
 

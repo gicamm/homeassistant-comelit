@@ -14,3 +14,4 @@ comelit:
     port: 80
     password: xxxxxx
     scan_interval: 30
+    binary_sensors: disable

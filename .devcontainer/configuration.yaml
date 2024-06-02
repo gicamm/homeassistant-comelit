@@ -4,7 +4,8 @@ default_config:
 logger:
   default: info
   logs:
-    custom_components.comelit: debug
+    custom_components.comelit.hub: debug
+    custom_components.comelit.vedo: debug
 
 comelit:
   hub:
@@ -22,3 +23,4 @@ comelit:
     port: 80
     password: xxxxxx
     scan_interval: 30
+    binary_sensors: disable
