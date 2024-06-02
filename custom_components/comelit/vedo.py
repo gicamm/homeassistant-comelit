@@ -7,8 +7,9 @@ import logging
 from threading import Thread
 from wrapt_timeout_decorator import timeout
 from homeassistant.const import STATE_ALARM_DISARMED, STATE_ALARM_ARMED_AWAY, STATE_ON, STATE_OFF
-from .binary_sensor import VedoSensor
+from custom_components.comelit.binary_sensor import VedoSensor
 from custom_components.comelit.alarm_control_panel import VedoAlarm
+from custom_components.comelit.exception import CookieException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class VedoRequest:
 # Manage the Comelit Vedo Central. Fetches the alarm status and the motion status.
 class ComelitVedo:
 
-    def __init__(self, host, port, password, scan_interval):
+    def __init__(self, host, port, password, scan_interval, expose_bin_sensors):
         """Initialize the sensor."""
         _LOGGER.info(f"Initialising ComelitVedo with host {host}, port {port}")
         self.sensors = {}
@@ -41,7 +42,7 @@ class ComelitVedo:
         self.host = host
         self.port = port
         self.password = password
-        self._scan_interval = scan_interval
+        self.expose_bin_sensors = expose_bin_sensors
         thread1 = SensorUpdater("Thread#BS", scan_interval, self)
         thread1.start()
 
@@ -63,7 +64,6 @@ class ComelitVedo:
             url = "http://{0}:{1}/{2}&_={3}".format(self.host, self.port, path, millis)
         else:
             url = "http://{0}:{1}/{2}?_={3}".format(self.host, self.port, path, millis)
-        _LOGGER.info(f"Build URL: {url}")
         return url, headers
 
     # Do the GET from the vedo IP
@@ -97,13 +97,14 @@ class ComelitVedo:
         if response.status_code == 200:
             uid = response.headers.get('set-cookie')
             if uid is not None:
-                _LOGGER.info("Logged in, %s", response.text)
+                _LOGGER.debug("Logged in, %s", response.text)
                 return uid
             else:
                 _LOGGER.warning("Error doing the login %s", response.text)
                 raise Exception("Unable to obtain the cookie")
         else:
             _LOGGER.error("Bad login response! - %s", response.text)
+            return None
 
     # Do the logout. Ignore errors
     def logout(self, uid):
@@ -148,6 +149,8 @@ class ComelitVedo:
 
     # update the binary motion detection sensor
     def update_sensor(self, s):
+        if s is None:
+            return
         try:
             id = s["id"]
             name = s["name"]
@@ -155,17 +158,19 @@ class ComelitVedo:
                 state = STATE_ON
             else:
                 state = STATE_OFF
-            sensor = VedoSensor(id, name, state)
             if id not in self.sensors:
+                # Add new sensor
                 if hasattr(self, 'binary_sensor_add_entities'):
+                    sensor = VedoSensor(id, name, state)
                     self.binary_sensor_add_entities([sensor])
                     self.sensors[id] = sensor
                     _LOGGER.info("added the binary sensor %s %s", name, sensor.entity_name)
             else:
-                _LOGGER.debug("updating the binary sensor %s %s", name, sensor.entity_name)
+                # update existing sensor
                 self.sensors[id].update_state(state)
+                _LOGGER.debug("updated the binary sensor %s", name)
         except Exception as e:
-            _LOGGER.exception("Error updating sensor %s", e)
+            _LOGGER.exception("Error updating the sensor %s", e)
 
     # update the alarm area
     def update_area(self, area):
@@ -178,18 +183,18 @@ class ComelitVedo:
             else:
                 state = STATE_ALARM_DISARMED
 
-            alarm_area = VedoAlarm(id, name, state, self)
             if id not in self.areas:
                 if hasattr(self, 'alarm_add_entities'):
+                    alarm_area = VedoAlarm(id, name, state, self)
                     self.alarm_add_entities([alarm_area])
                     self.areas[id] = alarm_area
                     _LOGGER.info("added the alarm area %s %s", name, alarm_area.entity_name)
             else:
                 self.areas[id].update_state(state)
-                _LOGGER.debug("updated the alarm area %s %s", name, alarm_area.entity_name)
+                _LOGGER.debug("updated the alarm area %s", name)
 
         except Exception as e:
-            _LOGGER.exception("Error updating alarm area %s", e)
+            _LOGGER.exception("Error updating the alarm area %s", e)
 
 
 # Update the binary sensors
@@ -204,7 +209,8 @@ class SensorUpdater (Thread):
 
     # Invalidate the uid
     def logout(self):
-        self._vedo.logout(self._uid)
+        if self._vedo is not None:
+            self._vedo.logout(self._uid)
         self._uid = None
 
     # Polls the sensors
@@ -238,7 +244,7 @@ class SensorUpdater (Thread):
                 for i in range(len(in_area)):
                     value = in_area[i]
                     if value == 'Not logged':
-                        raise Exception("cookie expired")
+                        raise CookieException("cookie expired")
 
                     if value > 1:
                         sensor_dict = {"index": i, "id": i, "name": description[i], "status": zone_statuses[i]}
@@ -246,8 +252,9 @@ class SensorUpdater (Thread):
                         sensors.append(sensor_dict)
 
                 if self._uid is not None:
-                    # for sensor in sensors:
-                    #     self._vedo.update_sensor(sensor)
+                    if self._vedo.expose_bin_sensors:
+                        for sensor in sensors:
+                            self._vedo.update_sensor(sensor)
 
                     p1_pres = areas_desc["p1_pres"]
                     p2_pres = areas_desc["p2_pres"]
@@ -274,7 +281,8 @@ class SensorUpdater (Thread):
                                 "in_time": in_time[i],
                                 "out_time": out_time[i]}
                         self._vedo.update_area(area)
-
+            except CookieException:
+                self.logout()
             except Exception as e:
                 _LOGGER.error("Error getting data! %s", e)
                 self.logout()

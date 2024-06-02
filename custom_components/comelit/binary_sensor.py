@@ -10,11 +10,9 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
-    if hass.data[DOMAIN]['hub'] is not None:
-        hass.data[DOMAIN]['hub'].binary_sensor_add_entities = add_entities
-    if hass.data[DOMAIN]['vedo'] is not None:
+    if 'vedo' in hass.data[DOMAIN] and hass.data[DOMAIN]['vedo'] is not None:
         hass.data[DOMAIN]['vedo'].binary_sensor_add_entities = add_entities
-    _LOGGER.info("Comelit Binary Sensor Integration started")
+        _LOGGER.info("Comelit Vedo Binary Sensor Integration started")
 
 
 class VedoSensor(ComelitDevice, BinarySensorEntity):
