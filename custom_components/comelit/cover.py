@@ -54,7 +54,7 @@ class ComelitCover(ComelitDevice, CoverEntity):
         _LOGGER.debug(f"Trying to OPEN cover {self.name}! _state={self._state}")
         self._hub.cover_up(self._id)
         if not stopping:
-            self._state == STATE_OPENING
+            self._state = STATE_OPENING
         self.schedule_update_ha_state()
 
     def close_cover(self, stopping=False, **kwargs):

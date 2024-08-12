@@ -1,0 +1,953 @@
+{
+  "req_type": 0,
+  "req_sub_type": -1,
+  "seq_id": 8321,
+  "req_result": 0,
+  "out_data": [
+    {
+      "id": "GEN#17#13#1",
+      "type": 1001,
+      "sub_type": 13,
+      "descrizione": "root",
+      "sched_status": "0",
+      "status": "0",
+      "powerst": "0",
+      "schedZoneStatus": [
+        0,
+        0,
+        0
+      ],
+      "elements": [
+        {
+          "id": "GEN#PL#9",
+          "data": {
+            "id": "GEN#PL#9",
+            "type": 1001,
+            "sub_type": 13,
+            "descrizione": "Home",
+            "sched_status": "0",
+            "status": "0",
+            "powerst": "0",
+            "schedZoneStatus": [
+              0,
+              0,
+              0
+            ],
+            "elements": [
+              {
+                "id": "GEN#PL#67",
+                "data": {
+                  "id": "GEN#PL#67",
+                  "type": 1001,
+                  "sub_type": 13,
+                  "descrizione": "Basement",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "schedZoneStatus": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "placeOrder": "5",
+                  "elements": [
+                    {
+                      "id": "DOM#LD#5.1",
+                      "data": {
+                        "id": "DOM#LD#5.1",
+                        "type": 1,
+                        "sub_type": 5,
+                        "descrizione": "water",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "num_modulo": "5",
+                        "num_uscita": "1",
+                        "icon_id": "0",
+                        "isProtected": "0",
+                        "objectId": "DOM#LD#5.1",
+                        "placeId": "GEN#PL#67"
+                      }
+                    },
+                    {
+                      "id": "DOM#LD#5.2",
+                      "data": {
+                        "id": "DOM#LD#5.2",
+                        "type": 1,
+                        "sub_type": 5,
+                        "descrizione": "water_pump",
+                        "sched_status": "0",
+                        "status": "1",
+                        "powerst": "1",
+                        "num_modulo": "5",
+                        "num_uscita": "2",
+                        "icon_id": "0",
+                        "isProtected": "0",
+                        "objectId": "DOM#LD#5.2",
+                        "placeId": "GEN#PL#67"
+                      }
+                    },
+                    {
+                      "id": "DOM#LT#5.7",
+                      "data": {
+                        "id": "DOM#LT#5.7",
+                        "type": 3,
+                        "sub_type": 1,
+                        "descrizione": "Basement 1",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "num_modulo": "5",
+                        "num_uscita": "7",
+                        "icon_id": "0",
+                        "isProtected": "0",
+                        "objectId": "DOM#LT#5.7",
+                        "placeId": "GEN#PL#67"
+                      }
+                    },
+                    {
+                      "id": "DOM#LT#5.8",
+                      "data": {
+                        "id": "DOM#LT#5.8",
+                        "type": 3,
+                        "sub_type": 1,
+                        "descrizione": "Basement 2",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "num_modulo": "5",
+                        "num_uscita": "8",
+                        "icon_id": "0",
+                        "isProtected": "0",
+                        "objectId": "DOM#LT#5.8",
+                        "placeId": "GEN#PL#67"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "GEN#PL#66",
+                "data": {
+                  "id": "GEN#PL#66",
+                  "type": 1001,
+                  "sub_type": 13,
+                  "descrizione": "Garage",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "schedZoneStatus": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "placeOrder": "6",
+                  "elements": [
+                    {
+                      "id": "GEN#PL#99",
+                      "data": {
+                        "id": "GEN#PL#99",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Garage",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "7",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#25.1",
+                            "data": {
+                              "id": "DOM#LT#25.1",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Garage",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "25",
+                              "num_uscita": "1",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#25.1",
+                              "placeId": "GEN#PL#99"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "GEN#PL#884",
+                      "data": {
+                        "id": "GEN#PL#884",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Bath 3",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "10",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#25.2",
+                            "data": {
+                              "id": "DOM#LT#25.2",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Bath3",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "25",
+                              "num_uscita": "2",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#25.2",
+                              "placeId": "GEN#PL#884"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "GEN#PL#10",
+                "data": {
+                  "id": "GEN#PL#10",
+                  "type": 1001,
+                  "sub_type": 13,
+                  "descrizione": "Apartment",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "schedZoneStatus": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "elements": [
+                    {
+                      "id": "GEN#PL#86",
+                      "data": {
+                        "id": "GEN#PL#86",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Living room",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "1",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#22.3",
+                            "data": {
+                              "id": "DOM#LT#22.3",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Living room",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "22",
+                              "num_uscita": "3",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#22.3",
+                              "placeId": "GEN#PL#86"
+                            }
+                          },
+                          {
+                            "id": "DOM#BL#31.7",
+                            "data": {
+                              "id": "DOM#BL#31.7",
+                              "type": 2,
+                              "sub_type": 30,
+                              "descrizione": "Living room",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "open_status": "1",
+                              "venetianStatus": "0",
+                              "num_modulo": "31",
+                              "num_uscita": "7",
+                              "openTime": "8",
+                              "closeTime": "8",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#BL#31.7",
+                              "placeId": "GEN#PL#86"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "GEN#PL#87",
+                      "data": {
+                        "id": "GEN#PL#87",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Bath 1",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "4",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#21.1",
+                            "data": {
+                              "id": "DOM#LT#21.1",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Bath1",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "21",
+                              "num_uscita": "1",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#21.1",
+                              "placeId": "GEN#PL#87"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "GEN#PL#89",
+                      "data": {
+                        "id": "GEN#PL#89",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Kitchen",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "2",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#22.6",
+                            "data": {
+                              "id": "DOM#LT#22.6",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Kitchen",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "22",
+                              "num_uscita": "6",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#22.6",
+                              "placeId": "GEN#PL#89"
+                            }
+                          },
+                          {
+                            "id": "DOM#BL#31.3",
+                            "data": {
+                              "id": "DOM#BL#31.3",
+                              "type": 2,
+                              "sub_type": 30,
+                              "descrizione": "Kitchen",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "open_status": "1",
+                              "venetianStatus": "0",
+                              "num_modulo": "31",
+                              "num_uscita": "3",
+                              "openTime": "8",
+                              "closeTime": "8",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#BL#31.3",
+                              "placeId": "GEN#PL#89"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "GEN#PL#91",
+                      "data": {
+                        "id": "GEN#PL#91",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Bedroom",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "12",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#21.2",
+                            "data": {
+                              "id": "DOM#LT#21.2",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Bedroom",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "21",
+                              "num_uscita": "2",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#21.2",
+                              "placeId": "GEN#PL#91"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "GEN#PL#104",
+                      "data": {
+                        "id": "GEN#PL#104",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Laundry",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "9",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#21.4",
+                            "data": {
+                              "id": "DOM#LT#21.4",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Laundry",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "21",
+                              "num_uscita": "4",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#21.4",
+                              "placeId": "GEN#PL#104"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "GEN#PL#11",
+                "data": {
+                  "id": "GEN#PL#11",
+                  "type": 1001,
+                  "sub_type": 13,
+                  "descrizione": "Second floor",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "schedZoneStatus": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "elements": [
+                    {
+                      "id": "GEN#PL#88",
+                      "data": {
+                        "id": "GEN#PL#88",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Bath 2",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "16",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#24.3",
+                            "data": {
+                              "id": "DOM#LT#24.3",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Bath 2",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "24",
+                              "num_uscita": "3",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#24.3",
+                              "placeId": "GEN#PL#88"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "GEN#PL#93",
+                      "data": {
+                        "id": "GEN#PL#93",
+                        "type": 1001,
+                        "sub_type": 13,
+                        "descrizione": "Bedroom 2",
+                        "sched_status": "0",
+                        "status": "0",
+                        "powerst": "0",
+                        "schedZoneStatus": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "placeOrder": "17",
+                        "elements": [
+                          {
+                            "id": "DOM#LT#24.4",
+                            "data": {
+                              "id": "DOM#LT#24.4",
+                              "type": 3,
+                              "sub_type": 1,
+                              "descrizione": "Bedroom 2",
+                              "sched_status": "0",
+                              "status": "0",
+                              "powerst": "0",
+                              "num_modulo": "24",
+                              "num_uscita": "4",
+                              "icon_id": "0",
+                              "isProtected": "0",
+                              "objectId": "DOM#LT#24.4",
+                              "placeId": "GEN#PL#93"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "DOM#CL#2.1",
+                "data": {
+                  "id": "DOM#CL#2.1",
+                  "type": 9,
+                  "sub_type": 16,
+                  "descrizione": "Clima",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "num_modulo": 2,
+                  "num_ingresso": 1,
+                  "num_moduloIE": "0",
+                  "num_uscitaIE": "0",
+                  "num_moduloI": "41",
+                  "num_uscitaI": "8",
+                  "num_moduloE": "0",
+                  "num_uscitaE": "0",
+                  "num_moduloI_ana": "0",
+                  "num_uscitaI_ana": "0",
+                  "num_moduloE_ana": "0",
+                  "num_uscitaE_ana": "0",
+                  "soglia_man_inv": "300",
+                  "soglia_man_est": "200",
+                  "soglia_man_notte_inv": "200",
+                  "soglia_man_notte_est": "200",
+                  "soglia_semiauto": "200",
+                  "night_mode": "0",
+                  "soglia_auto_inv": "200",
+                  "soglia_auto_est": "200",
+                  "out_enable_inv": "0",
+                  "out_enable_est": "0",
+                  "dir_enable_inv": "0",
+                  "dir_enable_est": "0",
+                  "heatAutoFanDisable": "0",
+                  "coolAutoFanDisable": "0",
+                  "heatSwingDisable": "0",
+                  "coolSwingDisable": "0",
+                  "out_type_inv": "0",
+                  "out_type_est": "0",
+                  "temp_base_inv": "200",
+                  "temp_base_est": "200",
+                  "num_moduloUD": "0",
+                  "num_uscitaUD": "0",
+                  "num_moduloU": "0",
+                  "num_uscitaU": "0",
+                  "num_moduloD": "0",
+                  "num_uscitaD": "0",
+                  "num_moduloU_ana": "0",
+                  "num_uscitaU_ana": "0",
+                  "num_moduloD_ana": "0",
+                  "num_uscitaD_ana": "0",
+                  "out_enable_umi": "0",
+                  "out_enable_deumi": "0",
+                  "dir_enable_umi": "0",
+                  "dir_enable_deumi": "0",
+                  "humAutoFanDisable": "0",
+                  "dehumAutoFanDisable": "0",
+                  "humSwingDisable": "0",
+                  "dehumSwingDisable": "0",
+                  "out_type_umi": "0",
+                  "out_type_deumi": "0",
+                  "soglia_man_umi": "50",
+                  "soglia_man_deumi": "50",
+                  "soglia_man_notte_umi": "50",
+                  "soglia_man_notte_deumi": "50",
+                  "night_mode_umi": "0",
+                  "soglia_semiauto_umi": "50",
+                  "umi_base_umi": "0",
+                  "umi_base_deumi": "0",
+                  "coolLimitMax": "300",
+                  "coolLimitMin": "50",
+                  "heatLimitMax": "300",
+                  "heatLimitMin": "50",
+                  "humidityViewOnly": "0",
+                  "icon_id": "0",
+                  "objectId": "DOM#CL#2.1",
+                  "placeId": "GEN#PL#9",
+                  "thermoViewOnly": "0",
+                  "viewOnly": "0",
+                  "temperatura": "294",
+                  "auto_man": "6",
+                  "est_inv": "1",
+                  "soglia_attiva": "300",
+                  "semiauto_enabled": "0",
+                  "umidita": "37",
+                  "auto_man_umi": "6",
+                  "deumi_umi": "1",
+                  "soglia_attiva_umi": "50",
+                  "semiauto_umi_enabled": "0",
+                  "connectionStatus": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "DOM#CL#62.",
+          "data": {
+            "id": "DOM#CL#62.",
+            "type": 9,
+            "sub_type": 16,
+            "descrizione": "Temperature Garage",
+            "sched_status": "0",
+            "status": "0",
+            "powerst": "0",
+            "num_modulo": 62,
+            "num_ingresso": 1,
+            "num_moduloIE": "0",
+            "num_uscitaIE": "0",
+            "num_moduloI": "0",
+            "num_uscitaI": "0",
+            "num_moduloE": "0",
+            "num_uscitaE": "0",
+            "num_moduloI_ana": "0",
+            "num_uscitaI_ana": "0",
+            "num_moduloE_ana": "0",
+            "num_uscitaE_ana": "0",
+            "soglia_man_inv": "93",
+            "soglia_man_est": "240",
+            "soglia_man_notte_inv": "180",
+            "soglia_man_notte_est": "270",
+            "soglia_semiauto": "200",
+            "night_mode": "0",
+            "soglia_auto_inv": "200",
+            "soglia_auto_est": "200",
+            "out_enable_inv": "0",
+            "out_enable_est": "0",
+            "dir_enable_inv": "0",
+            "dir_enable_est": "0",
+            "heatAutoFanDisable": "0",
+            "coolAutoFanDisable": "0",
+            "heatSwingDisable": "0",
+            "coolSwingDisable": "0",
+            "out_type_inv": "0",
+            "out_type_est": "0",
+            "temp_base_inv": "200",
+            "temp_base_est": "200",
+            "num_moduloUD": "0",
+            "num_uscitaUD": "0",
+            "num_moduloU": "0",
+            "num_uscitaU": "0",
+            "num_moduloD": "0",
+            "num_uscitaD": "0",
+            "num_moduloU_ana": "0",
+            "num_uscitaU_ana": "0",
+            "num_moduloD_ana": "0",
+            "num_uscitaD_ana": "0",
+            "out_enable_umi": "0",
+            "out_enable_deumi": "0",
+            "dir_enable_umi": "0",
+            "dir_enable_deumi": "0",
+            "humAutoFanDisable": "0",
+            "dehumAutoFanDisable": "0",
+            "humSwingDisable": "0",
+            "dehumSwingDisable": "0",
+            "out_type_umi": "0",
+            "out_type_deumi": "0",
+            "soglia_man_umi": "0",
+            "soglia_man_deumi": "0",
+            "soglia_man_notte_umi": "50",
+            "soglia_man_notte_deumi": "50",
+            "night_mode_umi": "0",
+            "soglia_semiauto_umi": "50",
+            "umi_base_umi": "0",
+            "umi_base_deumi": "0",
+            "coolLimitMax": "300",
+            "coolLimitMin": "50",
+            "heatLimitMax": "300",
+            "heatLimitMin": "50",
+            "humidityViewOnly": "0",
+            "icon_id": "0",
+            "objectId": "DOM#CL#62.",
+            "placeId": "",
+            "thermoViewOnly": "0",
+            "viewOnly": "1",
+            "temperatura": "328",
+            "auto_man": "6",
+            "est_inv": "0",
+            "soglia_attiva": "240",
+            "semiauto_enabled": "0",
+            "umidita": "34",
+            "auto_man_umi": "6",
+            "deumi_umi": "1",
+            "soglia_attiva_umi": "0",
+            "semiauto_umi_enabled": "0"
+          }
+        },
+        {
+          "id": "DOM#CN#15.1",
+          "data": {
+            "id": "DOM#CN#15.1",
+            "type": 11,
+            "sub_type": 15,
+            "descrizione": "Power Consume",
+            "sched_status": "0",
+            "status": "255",
+            "powerst": "255",
+            "num_modulo": "15",
+            "num_uscita": "1",
+            "label_value": "Wh",
+            "label_price": "€",
+            "thr_tab": [
+              "-1.000000",
+              "-1.000000",
+              "-1.000000",
+              "-1.000000"
+            ],
+            "price_thr_tab": [
+              "-1.000000",
+              "-1.000000",
+              "-1.000000",
+              "-1.000000"
+            ],
+            "prod": "0",
+            "count_div": "0.000000",
+            "cost": "0.180000",
+            "kCO2": "0.531000",
+            "compare": "0",
+            "groupOrder": "0",
+            "icon_id": "4",
+            "objectId": "DOM#CN#15.1",
+            "placeId": "",
+            "toolbar_active": "0",
+            "visible": "1",
+            "instant_power": "2244.000000"
+          }
+        },
+        {
+          "id": "DOM#LC#15.1",
+          "data": {
+            "id": "DOM#LC#15.1",
+            "type": 10,
+            "sub_type": 0,
+            "descrizione": "dishwasher",
+            "sched_status": "0",
+            "status": "1",
+            "powerst": "1",
+            "num_modulo": 15,
+            "num_uscita": 1,
+            "icon_id": "0",
+            "objectId": "DOM#LC#15.1",
+            "placeId": "",
+            "toolbar_active": "0",
+            "instant_power": "2244",
+            "num_module_TA": 41,
+            "num_out_TA": 4,
+            "description_TA": "Consumo",
+            "out_power": 13
+          }
+        },
+        {
+          "id": "DOM#LC#15.2",
+          "data": {
+            "id": "DOM#LC#15.2",
+            "type": 10,
+            "sub_type": 0,
+            "descrizione": "Washing Machine",
+            "sched_status": "0",
+            "status": "1",
+            "powerst": "1",
+            "num_modulo": 15,
+            "num_uscita": 2,
+            "icon_id": "0",
+            "objectId": "DOM#LC#15.2",
+            "placeId": "",
+            "toolbar_active": "0",
+            "instant_power": "0",
+            "num_module_TA": 41,
+            "num_out_TA": 1,
+            "description_TA": "Consumo",
+            "out_power": 13
+          }
+        },
+        {
+          "id": "DOM#LC#15.3",
+          "data": {
+            "id": "DOM#LC#15.3",
+            "type": 10,
+            "sub_type": 0,
+            "descrizione": "Dryer",
+            "sched_status": "0",
+            "status": "1",
+            "powerst": "1",
+            "num_modulo": 15,
+            "num_uscita": 3,
+            "icon_id": "0",
+            "objectId": "DOM#LC#15.3",
+            "placeId": "",
+            "toolbar_active": "0",
+            "instant_power": "0",
+            "num_module_TA": 41,
+            "num_out_TA": 2,
+            "description_TA": "Consumo",
+            "out_power": 19
+          }
+        },
+        {
+          "id": "DOM#CN#16.1",
+          "data": {
+            "id": "DOM#CN#16.1",
+            "type": 11,
+            "sub_type": 15,
+            "descrizione": "Solar Production",
+            "sched_status": "0",
+            "status": "255",
+            "powerst": "255",
+            "num_modulo": "16",
+            "num_uscita": "1",
+            "label_value": "Wh",
+            "label_price": "€",
+            "thr_tab": [
+              "-1.000000",
+              "-1.000000",
+              "-1.000000",
+              "-1.000000"
+            ],
+            "price_thr_tab": [
+              "-1.000000",
+              "-1.000000",
+              "-1.000000",
+              "-1.000000"
+            ],
+            "prod": "1",
+            "count_div": "0.000000",
+            "cost": "0.100000",
+            "kCO2": "0.531000",
+            "compare": "0",
+            "groupOrder": "0",
+            "icon_id": "4",
+            "objectId": "DOM#CN#16.1",
+            "placeId": "",
+            "toolbar_active": "0",
+            "visible": "1",
+            "instant_power": "3520.000000"
+          }
+        },
+        {
+          "id": "GEN#SC#4",
+          "data": {
+            "id": "GEN#SC#4",
+            "type": 1000,
+            "sub_type": 0,
+            "descrizione": "door_lock",
+            "sched_status": "0",
+            "status": "0",
+            "powerst": "0",
+            "remote": 1,
+            "scenarioLegacy": 2,
+            "scenarioType": 1,
+            "scenarioFake": 0,
+            "actions": [
+              {
+                "action_type": "2001",
+                "obj_id": "VIP#APARTMENT",
+                "action_params": [
+                  "48",
+                  "48",
+                  "48",
+                  "48",
+                  "48",
+                  "48",
+                  "48",
+                  "50",
+                  "0",
+                  "1"
+                ],
+                "delay": "0"
+              }
+            ],
+            "icon_id": "0",
+            "isProtected": "0",
+            "objectId": "GEN#SC#4",
+            "placeId": ""
+          }
+        }
+      ]
+    }
+  ],
+  "count": 1
+}

@@ -225,8 +225,10 @@ class ComelitHub:
         self.client.username_pw_set(mqtt_user, mqtt_password)
         self.client.connect(hub_host, mqtt_port, 45)
         self.client.subscribe(self.topic_tx)
-        thread1 = StatusUpdater("Thread#1", self._scan_interval, self)
-        thread1.start()
+        self.status_thread = StatusUpdater("Thread#1", self._scan_interval, self)
+
+    def start(self):
+        self.status_thread.start()
         self.client.loop_start()
 
     def dispatch(self, payload):
