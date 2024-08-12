@@ -64,6 +64,7 @@ def setup(hass, config):
             hass.helpers.discovery.load_platform('scene', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('switch', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('climate', DOMAIN, {}, config)
+            hub.start()
             _LOGGER.info("Comelit SimpleHome integration started")
 
     # Comelit Vedo
@@ -80,6 +81,7 @@ def setup(hass, config):
             hass.data[DOMAIN]['vedo'] = vedo
             hass.helpers.discovery.load_platform('binary_sensor', DOMAIN, {}, config)
             hass.helpers.discovery.load_platform('alarm_control_panel', DOMAIN, {}, config)
+            vedo.start()
             _LOGGER.info("Comelit Vedo integration started")
 
     return True

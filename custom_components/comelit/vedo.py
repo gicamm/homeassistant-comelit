@@ -43,8 +43,10 @@ class ComelitVedo:
         self.port = port
         self.password = password
         self.expose_bin_sensors = expose_bin_sensors
-        thread1 = SensorUpdater("Thread#BS", scan_interval, self)
-        thread1.start()
+        self.vedo_updater = SensorUpdater("Thread#BS", scan_interval, self)
+
+    def start(self):
+        self.vedo_updater.start()
 
     # Build the HTTP request
     def build_http(self, headers, uid, path):
