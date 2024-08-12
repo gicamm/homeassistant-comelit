@@ -32,11 +32,11 @@ class ComelitLight(ComelitDevice, LightEntity):
 
     @property
     def supported_color_modes(self):
-        return ColorMode.BRIGHTNESS if self._brightness else {ColorMode.ONOFF}
+        return {ColorMode.BRIGHTNESS} if self._brightness else {ColorMode.ONOFF}
 
     @property
     def color_mode(self):
-        return ColorMode.BRIGHTNESS if self._brightness else ColorMode.ONOFF
+        return {ColorMode.BRIGHTNESS} if self._brightness else {ColorMode.ONOFF}
     
     @property
     def brightness(self):
