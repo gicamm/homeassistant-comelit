@@ -24,7 +24,7 @@ def test_light_supported_color_modes(comelit_light):
 
 
 def test_light_color_mode(comelit_light):
-    assert comelit_light.color_mode == {ColorMode.BRIGHTNESS}
+    assert comelit_light.color_mode == ColorMode.BRIGHTNESS
 
 
 def test_light_brightness(comelit_light):
