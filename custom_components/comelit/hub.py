@@ -318,12 +318,12 @@ class ComelitHub:
                 _LOGGER.info("added the sensor %s", name)
         else:
             self.sensors[name].update_state(value)
-            _LOGGER.debug("updated the sensor %s", name)
+            # _LOGGER.debug("updated the sensor %s", name)
 
     def update_climate(self, id, description, data):
         try:
             assert HubClasses.TEMPERATURE in id
-            _LOGGER.debug("update_climate: %s has data %s", description, data)
+            # _LOGGER.debug("update_climate: %s has data %s", description, data)
             measured_temp = format(float(data[HubFields.TEMPERATURE]), '.1f')
             measured_temp = float(measured_temp) / 10
 
@@ -351,13 +351,13 @@ class ComelitHub:
                     _LOGGER.info("added the climate %s", name)
             else:
                 self.climates[name].update_state(state_dict)
-                _LOGGER.debug("updated the climate %s", name)
+                # _LOGGER.debug("updated the climate %s", name)
         except Exception as e:
             _LOGGER.exception("Error updating climate %s %s", e, data)
 
     def update_light(self, id, description, data):
         try:
-            _LOGGER.debug("update_light: %s has data %s", description, data)
+            # _LOGGER.debug("update_light: %s has data %s", description, data)
             
             # Dimmable light (3=light, 4=dimmable)
             if data["type"] == 3 and data["sub_type"] == 4:
@@ -377,7 +377,7 @@ class ComelitHub:
                     self.lights[id] = light
                     _LOGGER.info("added the light %s %s", description, light.entity_name)
             else:
-                _LOGGER.debug(f"updating the light {description} {light.entity_name} with state {state}")
+                # _LOGGER.debug(f"updating the light {description} {light.entity_name} with state {state}")
                 self.lights[id].update_state(state)
         except Exception as e:
             _LOGGER.exception("Error updating light %s", e)
@@ -387,7 +387,7 @@ class ComelitHub:
             if 'position' in data:
                 if data['status'] == '0':
                     # Not moving
-                    if data['open_status'] == '1':
+                    if data[status_key] == '1':
                         state = STATE_OPEN
                     else:
                         state = STATE_CLOSED
@@ -401,15 +401,16 @@ class ComelitHub:
                 state = STATE_UNKNOWN
                 position = -1
 
-            if id not in self.covers:  # Add the new cover
+            if id in self.covers: 
+                _LOGGER.debug("update_cover: updating the cover %s with state %s and position %f", id, state, position)
+                self.covers[id].update_state(state, position)
+            else:  # Add the new cover
                 if hasattr(self, 'cover_add_entities'):
                     cover = ComelitCover(id, description, state, position, CommandHub(self))
                     self.cover_add_entities([cover])
                     self.covers[id] = cover
-                    _LOGGER.info("added the cover %s %s", description, id)
-            else:
-                _LOGGER.debug("updating the cover %s %s", description, id)
-                self.covers[id].update_state(state, position)
+                    _LOGGER.info("update_cover: added the cover %s %s", description, id)
+
         except Exception as e:
             _LOGGER.exception("Error updating the cover %s", e)
 
@@ -438,7 +439,7 @@ class ComelitHub:
                     self.switches[id] = switch
                     _LOGGER.info("added the switch %s %s", description, id)
             else:
-                _LOGGER.debug("updating the switch %s %s", description, id)
+                # _LOGGER.debug("updating the switch %s %s", description, id)
                 self.switches[id].update_state(state)
         except Exception as e:
             _LOGGER.exception("Error updating the switch %s", e)
@@ -446,9 +447,8 @@ class ComelitHub:
     def update_entities(self, elements):
         try:
             for item in elements:
-                _LOGGER.debug("processing item %s", item)
-
                 id = item[HubFields.ID]
+                _LOGGER.debug("processing item id %s", id)
 
                 if HubClasses.LOGICAL in id:
                     logical_elements = item[HubFields.DATA][HubFields.ELEMENTS]
@@ -478,6 +478,7 @@ class ComelitHub:
                     self.update_light(id, description, item)
                 elif HubClasses.COVER in id:
                     description = item[HubFields.DESCRIPTION]
+                    _LOGGER.debug("processing cover %s: %s", description, item)
                     self.update_cover(id, description, item, HubFields.COVER_STATUS)
                 elif HubClasses.AUTOMATION in id:
                     description = item[HubFields.DESCRIPTION]
@@ -495,7 +496,7 @@ class ComelitHub:
             _LOGGER.error(e)
 
     def status(self, payload):
-        _LOGGER.debug(f"Dispatching status {payload}")
+        _LOGGER.debug(f"Dispatching status")
         try:
             elements = payload["out_data"][0][HubFields.ELEMENTS]
             self.update_entities(elements)
