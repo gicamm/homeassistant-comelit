@@ -91,7 +91,7 @@ def on_message_callback(client, userdata, message):
 
 def connect_callback(client, userdata, flags, rc):
     try:
-        _LOGGER.info("connected to comelit hub")
+        client.subscribe(client.hub.topic_tx)
         client.hub.announce()
     except Exception as e:
         _LOGGER.exception(e)
@@ -224,12 +224,12 @@ class ComelitHub:
         self.client.on_disconnect = disconnect_callback
         self.client.username_pw_set(mqtt_user, mqtt_password)
         self.client.connect(hub_host, mqtt_port, 45)
-        self.client.subscribe(self.topic_tx)
         self.status_thread = StatusUpdater("Thread#1", self._scan_interval, self)
 
     def start(self):
-        self.status_thread.start()
+        
         self.client.loop_start()
+        self.status_thread.start()
 
     def dispatch(self, payload):
         try:
