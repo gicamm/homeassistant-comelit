@@ -93,12 +93,13 @@ def connect_callback(client, userdata, flags, rc):
     try:
         client.subscribe(client.hub.topic_tx)
         client.hub.announce()
+        _LOGGER.info("connected to hub")
     except Exception as e:
         _LOGGER.exception(e)
 
 
 def disconnect_callback(client, userdata, rc):
-    _LOGGER.info("disconnected from hub")
+    _LOGGER.warning("disconnected from hub")
 
 
 # Manage lights, switch and covers
