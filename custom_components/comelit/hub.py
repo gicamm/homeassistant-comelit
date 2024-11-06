@@ -497,7 +497,7 @@ class ComelitHub:
             _LOGGER.error(e)
 
     def status(self, payload):
-        _LOGGER.debug(f"Dispatching status")
+        _LOGGER.debug("Dispatching status")
         try:
             elements = payload["out_data"][0][HubFields.ELEMENTS]
             self.update_entities(elements)
