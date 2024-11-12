@@ -70,13 +70,13 @@ class ComelitVedo:
 
     # Do the GET from the vedo IP
     @timeout(DEFAULT_TIMEOUT, use_signals=True)
-    def get(self, uid,  path, is_response):
+    def get(self, uid, path, is_response):
         _LOGGER.info(f"Running GET with uid {uid}, path {path}")
         url, headers = self.build_http(None, uid, path)
         _LOGGER.info(f"GET: url {url}, headers {headers}")
         response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
         response.raise_for_status()
-        text = response.text
+        text = response.content.decode('iso-8859-1').encode('utf-8')
         if is_response:
             payload = json.loads(text)
             return payload
@@ -156,7 +156,8 @@ class ComelitVedo:
         try:
             id = s["id"]
             name = s["name"]
-            if s["status"] == "0011":
+            zone_status = int(s["status"], 16)
+            if (zone_status & 1) != 0:
                 state = STATE_ON
             else:
                 state = STATE_OFF
@@ -248,7 +249,7 @@ class SensorUpdater (Thread):
                     if value == 'Not logged':
                         raise CookieException("cookie expired")
 
-                    if value > 1:
+                    if value != 0:
                         sensor_dict = {"index": i, "id": i, "name": description[i], "status": zone_statuses[i]}
                         _LOGGER.debug(f"Updating the zone {sensor_dict}")
                         sensors.append(sensor_dict)
