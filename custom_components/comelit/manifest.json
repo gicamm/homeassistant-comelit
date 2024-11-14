@@ -15,5 +15,5 @@
 		"paho-mqtt",
 		"wrapt_timeout_decorator"
 	],
-	"version": "0.9.3"
+	"version": "1.0.2"
 }
