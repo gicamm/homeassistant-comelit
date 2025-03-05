@@ -214,7 +214,7 @@ class ComelitHub:
         self._vedo = None
         self._vip = None
         self._music = None
-        self.client = mqtt.Client(client_name)
+        self.client = mqtt.Client(client_id=client_name)
         _LOGGER.info("{0} {1}:{2} {3}".format("Starting Comelit Hub integration", hub_host, mqtt_port, hub_serial))
         self.topic_rx = "{0}/{1}/{2}/{3}".format("HSrv", hub_serial, "rx", client_name)
         self.topic_tx = "{0}/{1}/{2}/{3}".format("HSrv", hub_serial, "tx", client_name)
