@@ -6,7 +6,7 @@ import requests
 import logging
 from threading import Thread
 from wrapt_timeout_decorator import timeout
-from homeassistant.const import STATE_ALARM_DISARMED, STATE_ALARM_ARMED_AWAY, STATE_ON, STATE_OFF
+from homeassistant.const import STATE_ALARM_DISARMED, STATE_ALARM_ARMED_AWAY, STATE_ON, STATE_OFF, STATE_ALARM_ARMED_NIGHT
 from custom_components.comelit.binary_sensor import VedoSensor
 from custom_components.comelit.alarm_control_panel import VedoAlarm
 from custom_components.comelit.exception import CookieException
@@ -144,6 +144,10 @@ class ComelitVedo:
         _LOGGER.info("Arming the area %s", id)
         self.arm_disarm("tot", id)
 
+    def arm_night(self, id):
+        _LOGGER.info("Night mode armed for area %s", id)
+        self.arm_disarm("p1", id)
+
     # disarm the alarm
     def disarm(self, id):
         _LOGGER.info("Disarming the area %s", id)
@@ -183,6 +187,8 @@ class ComelitVedo:
             name = area["name"]
             if area["armed"] == 4:
                 state = STATE_ALARM_ARMED_AWAY
+            elif area["armed"] == 1:
+                state = STATE_ALARM_ARMED_NIGHT
             else:
                 state = STATE_ALARM_DISARMED
 

@@ -33,7 +33,7 @@ class VedoAlarm(ComelitDevice, AlarmControlPanelEntity):
         self._vedo.arm(self._id)
 
     def alarm_arm_night(self, code=None):
-        self._vedo.disarm(self._id)
+        self._vedo.arm_night(self._id)
 
     # @property
     # def state(self):
