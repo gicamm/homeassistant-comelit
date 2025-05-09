@@ -2,6 +2,7 @@
 
 import logging
 import voluptuous as vol
+from homeassistant.helpers.discovery import load_platform
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import (CONF_HOST, CONF_USERNAME, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL,
                                  CONF_BINARY_SENSORS)
@@ -58,12 +59,12 @@ def setup(hass, config):
             hub = ComelitHub(hub_client, hub_serial, hub_host, mqtt_port, mqtt_user, mqtt_password, hub_user,
                              hub_password, scan_interval)
             hass.data[DOMAIN]['hub'] = hub
-            hass.helpers.discovery.load_platform('sensor', DOMAIN, {}, config)
-            hass.helpers.discovery.load_platform('light', DOMAIN, {}, config)
-            hass.helpers.discovery.load_platform('cover', DOMAIN, {}, config)
-            hass.helpers.discovery.load_platform('scene', DOMAIN, {}, config)
-            hass.helpers.discovery.load_platform('switch', DOMAIN, {}, config)
-            hass.helpers.discovery.load_platform('climate', DOMAIN, {}, config)
+            load_platform(hass,'sensor', DOMAIN, {}, config)
+            load_platform(hass,'light', DOMAIN, {}, config)
+            load_platform(hass,'cover', DOMAIN, {}, config)
+            load_platform(hass,'scene', DOMAIN, {}, config)
+            load_platform(hass,'switch', DOMAIN, {}, config)
+            load_platform(hass,'climate', DOMAIN, {}, config)
             hub.start()
             _LOGGER.info("Comelit SimpleHome integration started")
 
@@ -79,8 +80,8 @@ def setup(hass, config):
             expose_bin_sensors = schema[CONF_BINARY_SENSORS]
             vedo = ComelitVedo(vedo_host, vedo_port, vedo_pwd, scan_interval, expose_bin_sensors)
             hass.data[DOMAIN]['vedo'] = vedo
-            hass.helpers.discovery.load_platform('binary_sensor', DOMAIN, {}, config)
-            hass.helpers.discovery.load_platform('alarm_control_panel', DOMAIN, {}, config)
+            load_platform(hass,'binary_sensor', DOMAIN, {}, config)
+            load_platform(hass,'alarm_control_panel', DOMAIN, {}, config)
             vedo.start()
             _LOGGER.info("Comelit Vedo integration started")
 
