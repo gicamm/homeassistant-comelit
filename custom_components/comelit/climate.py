@@ -39,16 +39,25 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
 
     @property
     def hvac_mode(self):
-        return HVACMode.HEAT if self._state['is_heating'] else HVACMode.OFF
+        if self._state['status']:
+            if self._state['is_winter_season']:
+                return HVACMode.HEAT 
+            else:
+                return HVACMode.COOL 
+        else: 
+            return HVACMode.OFF
 
     @property
     def hvac_modes(self):
-        return [HVACMode.HEAT, HVACMode.OFF]
+        return [HVACMode.HEAT, HVACMode.COOL, HVACMode.OFF]
 
     @property
     def hvac_action(self):
-        if self._state['is_heating']:
-            return HVACAction.HEATING
+        if self._state['status']:
+            if self._state['is_winter_season']:
+                return HVACAction.HEATING
+            else:
+                return HVACAction.COOLING
         else:
             return HVACAction.IDLE if self._state['is_enabled'] else HVACAction.OFF
 
@@ -80,7 +89,7 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
             self.schedule_update_ha_state()
 
     def set_hvac_mode(self, hvac_mode):
-        self._hub.climate_set_state(self._id, hvac_mode == HVACMode.HEAT)
+        self._hub.climate_set_state(self._id, hvac_mode)
         self.schedule_update_ha_state()
         
     def update(self):
@@ -88,5 +97,5 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
 
     @property
     def state(self):
-        state_mapping = {HVACAction.HEATING: STATE_ON, HVACAction.IDLE: STATE_IDLE, HVACAction.OFF: STATE_OFF}
+        state_mapping = {HVACAction.HEATING: STATE_ON, HVACAction.COOLING: STATE_ON, HVACAction.IDLE: STATE_IDLE, HVACAction.OFF: STATE_OFF}
         return state_mapping[self.hvac_action]

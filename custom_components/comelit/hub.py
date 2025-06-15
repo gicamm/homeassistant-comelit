@@ -8,6 +8,8 @@ from threading import Thread
 from homeassistant.const import STATE_CLOSED, STATE_OPEN, STATE_CLOSING, STATE_OPENING, STATE_ON, STATE_OFF, \
     STATE_UNKNOWN
 
+from homeassistant.components.climate import HVACMode
+
 from .scene import ComelitScenario
 from .sensor import PowerSensor, TemperatureSensor, HumiditySensor
 from .light import ComelitLight
@@ -54,6 +56,7 @@ class HubFields:
     PARAMETER_NAME = 'param_name'
     PARAMETER_VALUE = 'param_value'
     SUB_TYPE = 'sub_type'
+    WINTER_SEASON = 'est_inv'
 
 
 class HubClasses:
@@ -168,7 +171,17 @@ class CommandHub:
     def climate_set_state(self, id, state):
         try:
             _LOGGER.info(f'Setting climate {id} to state {state}')
-            req = {"req_type": RequestType.TEMPERATURE, "req_sub_type": 3, "obj_id": id, "act_type": 0, "act_params": [int(state)]}
+            if state == HVACMode.HEAT:
+                act_type = 4
+                act_params = [1]
+            elif state == HVACMode.COOL:
+                act_type = 4
+                act_params = [0]
+            # OFF
+            else:
+                act_type = 0
+                act_params = [0]
+            req = {"req_type": RequestType.TEMPERATURE, "req_sub_type": 3, "obj_id": id, "act_type": act_type, "act_params": act_params}
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error setting climate state %s", e)
@@ -332,9 +345,11 @@ class ComelitHub:
             target = float(target) / 10
 
             is_enabled = int(data['auto_man']) == 2
-            is_heating = bool(int(data[HubFields.STATUS]))
+            is_winter_season = bool(int(data[HubFields.WINTER_SEASON]))
+            status = bool(int(data[HubFields.STATUS]))
             state_dict = {'is_enabled': is_enabled,
-            'is_heating': is_heating,
+            'is_winter_season': is_winter_season,
+            'status': status,
             'measured_temperature': measured_temp,
             'target_temperature': target}
 
