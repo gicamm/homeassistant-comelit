@@ -33,7 +33,7 @@ class TestVedoAlarm:
 
     def test_alarm_arm_night(self, vedo_alarm):
         vedo_alarm.alarm_arm_night()
-        vedo_alarm._vedo.disarm.assert_called_once_with('1')
+        vedo_alarm._vedo.arm_night.assert_called_once_with('1')
 
     def test_alarm_arm_home_errors(self, vedo_alarm):
         with pytest.raises(NotImplementedError):
