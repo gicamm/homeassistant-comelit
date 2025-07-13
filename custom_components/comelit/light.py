@@ -44,7 +44,6 @@ class ComelitLight(ComelitDevice, LightEntity):
 
     def update(self):
         pass
-        # self._state = self._light.state(self._id)
 
     def turn_on(self, **kwargs):
         if ATTR_BRIGHTNESS in kwargs:

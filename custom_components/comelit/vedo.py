@@ -159,23 +159,23 @@ class ComelitVedo:
         if s is None:
             return
         try:
-            id = s["id"]
+            sensor_id = s["id"]
             name = s["name"]
             zone_status = int(s["status"], 16)
             if (zone_status & 1) != 0:
                 state = STATE_ON
             else:
                 state = STATE_OFF
-            if id not in self.sensors:
+            if sensor_id not in self.sensors:
                 # Add new sensor
                 if hasattr(self, 'binary_sensor_add_entities'):
-                    sensor = VedoSensor(id, name, state)
+                    sensor = VedoSensor(sensor_id, name, state)
                     self.binary_sensor_add_entities([sensor])
-                    self.sensors[id] = sensor
+                    self.sensors[sensor_id] = sensor
                     _LOGGER.info("added the binary sensor %s %s", name, sensor.entity_name)
             else:
                 # update existing sensor
-                self.sensors[id].update_state(state)
+                self.sensors[sensor_id].update_state(state)
                 _LOGGER.debug("updated the binary sensor %s", name)
         except Exception as e:
             _LOGGER.exception("Error updating the sensor %s", e)
@@ -184,7 +184,7 @@ class ComelitVedo:
     def update_area(self, area):
         _LOGGER.debug(f"Updating the alarm area {area}")
         try:
-            id = area["id"]
+            area_id = area["id"]
             name = area["name"]
             if area["armed"] == 4:
                 state = STATE_ALARM_ARMED_AWAY
@@ -193,14 +193,14 @@ class ComelitVedo:
             else:
                 state = STATE_ALARM_DISARMED
 
-            if id not in self.areas:
+            if area_id not in self.areas:
                 if hasattr(self, 'alarm_add_entities'):
-                    alarm_area = VedoAlarm(id, name, state, self)
+                    alarm_area = VedoAlarm(area_id, name, state, self)
                     self.alarm_add_entities([alarm_area])
-                    self.areas[id] = alarm_area
+                    self.areas[area_id] = alarm_area
                     _LOGGER.info("added the alarm area %s %s", name, alarm_area.entity_name)
             else:
-                self.areas[id].update_state(state)
+                self.areas[area_id].update_state(state)
                 _LOGGER.debug("updated the alarm area %s", name)
 
         except Exception as e:
