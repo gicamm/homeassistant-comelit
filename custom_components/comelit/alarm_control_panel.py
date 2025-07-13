@@ -35,10 +35,6 @@ class VedoAlarm(ComelitDevice, AlarmControlPanelEntity):
     def alarm_arm_night(self, code=None):
         self._vedo.arm_night(self._id)
 
-    # @property
-    # def state(self):
-    #     return self._state
-
     @property
     def code_arm_required(self):
         return False

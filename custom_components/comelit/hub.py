@@ -79,8 +79,8 @@ def publish(client, topic, agent_id, sequence_id, sessiontoken, data):
         data["seq_id"] = sequence_id
         data["agent_id"] = agent_id
         data["sessiontoken"] = sessiontoken
-        jsonD = json.dumps(data)
-        client.publish(topic, jsonD)
+        json_data = json.dumps(data)
+        client.publish(topic, json_data)
         client.hub.sequence_id = client.hub.sequence_id + 1
     except Exception as e:
         _LOGGER.exception("Error publishing message %s", e)
@@ -289,8 +289,6 @@ class ComelitHub:
                 self._vedo["host"] = value
             elif name == "alarmLocalPort":
                 self._vedo["port"] = value
-            elif name == "alarmLocalPort":
-                self._vedo["port"] = value
             elif name == "vipEnable":
                 self._vip["enable"] = value == "1"
             elif name == "musicEnable":
@@ -463,10 +461,10 @@ class ComelitHub:
     def update_entities(self, elements):
         try:
             for item in elements:
-                id = item[HubFields.ID]
-                _LOGGER.debug("processing item id %s", id)
+                entity_id = item[HubFields.ID]
+                _LOGGER.debug("processing item %s", entity_id)
 
-                if HubClasses.LOGICAL in id:
+                if HubClasses.LOGICAL in entity_id:
                     logical_elements = item[HubFields.DATA][HubFields.ELEMENTS]
                     for logical_element in logical_elements:
                         logical_data = logical_element[HubFields.DATA]
@@ -478,33 +476,33 @@ class ComelitHub:
                 try:
                     item = item[HubFields.DATA]
                 except Exception:
-                    item = item
+                    pass
 
-                if HubClasses.POWER_CONSUMPTION in id or HubClasses.FTV in id:
+                if HubClasses.POWER_CONSUMPTION in entity_id or HubClasses.FTV in entity_id:
                     description = item[HubFields.DESCRIPTION]
-                    self.update_sensor(id, description, item)
-                elif HubClasses.TEMPERATURE in id:  
+                    self.update_sensor(entity_id, description, item)
+                elif HubClasses.TEMPERATURE in entity_id:
                     description = item[HubFields.DESCRIPTION]
-                    self.update_sensor(id, description, item)
+                    self.update_sensor(entity_id, description, item)
                     # skip creating the climate sensor for the PT100 sensor and add compatibility for ONE
                     if HubFields.SUB_TYPE in item and (item["sub_type"] == 16 or item["sub_type"] == 12):# skip creating the climate sensor for the PT100 sensor
-                        self.update_climate(id, description, item)
-                elif HubClasses.LIGHT in id:
+                        self.update_climate(entity_id, description, item)
+                elif HubClasses.LIGHT in entity_id:
                     description = item[HubFields.DESCRIPTION]
-                    self.update_light(id, description, item)
-                elif HubClasses.COVER in id:
+                    self.update_light(entity_id, description, item)
+                elif HubClasses.COVER in entity_id:
                     description = item[HubFields.DESCRIPTION]
                     _LOGGER.debug("processing cover %s: %s", description, item)
-                    self.update_cover(id, description, item, HubFields.COVER_STATUS)
-                elif HubClasses.AUTOMATION in id:
+                    self.update_cover(entity_id, description, item, HubFields.COVER_STATUS)
+                elif HubClasses.AUTOMATION in entity_id:
                     description = item[HubFields.DESCRIPTION]
-                    self.update_cover(id, description, item, HubFields.STATUS)
-                elif HubClasses.SCENARIO in id:
+                    self.update_cover(entity_id, description, item, HubFields.STATUS)
+                elif HubClasses.SCENARIO in entity_id:
                     description = item[HubFields.DESCRIPTION]
-                    self.update_scenario(id, description, item)
-                elif HubClasses.OTHER in id:
+                    self.update_scenario(entity_id, description, item)
+                elif HubClasses.OTHER in entity_id:
                     description = item[HubFields.DESCRIPTION]
-                    self.update_switch(id, description, item)
+                    self.update_switch(entity_id, description, item)
                 else:
                     continue
         except Exception as e:
@@ -540,7 +538,6 @@ class StatusUpdater (Thread):
         self.hub = hub
 
     def run(self):
-        # parameters_timer = 0
         _LOGGER.debug("Comelit Hub status snapshot started")
         while True:
             if self.hub.sessiontoken == "":
@@ -548,5 +545,4 @@ class StatusUpdater (Thread):
 
             update_status(self.hub)
             time.sleep(self._scan_interval)
-            # parameters_timer = parameters_timer - 1
 

@@ -55,12 +55,13 @@ class PowerSensor(ComelitSensor):
         """Initialize the sensor."""
         self.prod = prod
         if prod:
-            type = "power_prod"
+            power_type = "power_prod"
             icon = "mdi:solar-power"
         else:
-            type = "power_cons"
+            power_type = "power_cons"
             icon = "mdi:power-plug"
-        ComelitSensor.__init__(self, id, description, value, type, icon, UnitOfPower.WATT, SensorDeviceClass.POWER)
+        ComelitSensor.__init__(self, id, description, value, power_type, icon, UnitOfPower.WATT,
+                               SensorDeviceClass.POWER)
 
 
 class TemperatureSensor(ComelitSensor):

@@ -21,7 +21,7 @@ class TestInit(unittest.TestCase):
         scan_interval = 30
 
         hass = Mock()
-        hass.data = dict()
+        hass.data = {}
         conf = {
             "hub": {
                 CONF_HOST: hub_address, CONF_USERNAME: hub_user, CONF_PASSWORD: hub_pwd,
@@ -34,7 +34,7 @@ class TestInit(unittest.TestCase):
 
         self.assertTrue(hass.data["comelit"]['hub'])
 
-        # assert ComelitHub got the correct arguments
+        # assert Comelit Hub got the correct arguments
         mock_ComelitHub.assert_called_with(hub_client, hub_serial, hub_address, hub_port, mqtt_user, mqtt_pwd,
                                            hub_user, hub_pwd, scan_interval)
 
@@ -47,7 +47,7 @@ class TestInit(unittest.TestCase):
         scan_interval = 30
         expose_bin_sensors = True
         hass = Mock()
-        hass.data = dict()
+        hass.data = {}
         conf = {
             "vedo": {
                 CONF_HOST: vedo_host, CONF_PASSWORD: vedo_pwd,
@@ -61,5 +61,5 @@ class TestInit(unittest.TestCase):
 
         self.assertTrue(hass.data["comelit"]['vedo'])
 
-        # assert ComelitHub got the correct arguments
+        # assert Comelit Vedo got the correct arguments
         mock_ComelitVedo.assert_called_with(vedo_host, vedo_port, vedo_pwd, scan_interval, expose_bin_sensors)
