@@ -66,7 +66,9 @@ class ComelitVedo:
             headers["Cookie"] = uid
 
         millis = int(round(time.time() * 1000))
-        if "?" in path:
+        if ".cgi" in path:
+            url = f"http://{self.host}:{self.port}/{path}"
+        elif "?" in path:
             url = f"http://{self.host}:{self.port}/{path}&_={millis}"
         else:
             url = f"http://{self.host}:{self.port}/{path}?_={millis}"
