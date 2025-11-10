@@ -260,6 +260,7 @@ class SensorUpdater(Thread):
                 in_area = zone_desc["in_area"]
                 descs = areas_desc["description"]
                 ready = areas_stat["ready"]
+                present = areas_desc["present"]
 
                 sensors = []
 
@@ -298,21 +299,22 @@ class SensorUpdater(Thread):
                     out_time = areas_stat["out_time"]
 
                     for i in range(len(descs)):
-                        area = {
-                            "name": descs[i],
-                            "id": i,
-                            "p1_pres": p1_pres[i],
-                            "p2_pres": p2_pres[i],
-                            "ready": ready[i],
-                            "armed": armed[i],
-                            "alarm": alarm[i],
-                            "alarm_memory": alarm_memory[i],
-                            "sabotage": sabotage[i],
-                            "anomaly": anomaly[i],
-                            "in_time": in_time[i],
-                            "out_time": out_time[i],
-                        }
-                        self._vedo.update_area(area)
+                        if present[i] == 1:
+                            area = {
+                                "name": descs[i],
+                                "id": i,
+                                "p1_pres": p1_pres[i],
+                                "p2_pres": p2_pres[i],
+                                "ready": ready[i],
+                                "armed": armed[i],
+                                "alarm": alarm[i],
+                                "alarm_memory": alarm_memory[i],
+                                "sabotage": sabotage[i],
+                                "anomaly": anomaly[i],
+                                "in_time": in_time[i],
+                                "out_time": out_time[i],
+                            }
+                            self._vedo.update_area(area)
             except CookieException:
                 self.logout()
             except Exception as e:
