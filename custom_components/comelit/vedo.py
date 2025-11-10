@@ -131,9 +131,16 @@ class ComelitVedo:
         for i in range(1, ARM_DISARM_ATTEMPT + 1):
             try:
                 uid = self.login()
-                path = f"{VedoRequest.ACTION}?vedo=1&{key}={id}&force=1"
-                self.get(uid, path, False)
-                _LOGGER.info("Armed/Disarmed the area %s", id)
+                headers = DEFAULT_HEADERS.copy()
+                url, headers = self.build_http(headers, uid, VedoRequest.ACTION)
+                params = {
+                    "forced": 1,
+                    "vedo_param": 1,
+                    "type_param": key,
+                    "area_param": id,
+                }
+                self.post(url, params, headers)
+                _LOGGER.info("Armed/Disarmed the area: %s", id)
                 self.logout(uid)
                 break
             except Exception as e:
