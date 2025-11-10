@@ -199,12 +199,19 @@ class ComelitVedo:
         try:
             area_id = area["id"]
             name = area["name"]
-            if area["armed"] == 4:
-                state = AlarmControlPanelState.ARMED_AWAY
-            elif area["armed"] == 1:
-                state = AlarmControlPanelState.ARMED_NIGHT
+            if area["armed"] > 0:
+              if area['out_time'] == 1:
+                   state = AlarmControlPanelState.ARMING
+              elif area["alarm"] == 1 or area["sabotage"] == 1 or area["anomaly"] == 1:
+                   state = AlarmControlPanelState.TRIGGERED
+              elif area["armed"] == 4:
+                   state = AlarmControlPanelState.ARMED_AWAY
+              elif area["armed"] == 1:
+                   state = AlarmControlPanelState.ARMED_NIGHT
             else:
                 state = AlarmControlPanelState.DISARMED
+            
+
 
             if area_id not in self.areas:
                 if hasattr(self, "alarm_add_entities"):
