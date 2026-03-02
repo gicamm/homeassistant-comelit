@@ -1,30 +1,36 @@
 """Platform for sensor integration."""
-import time
-import json
 
-import paho.mqtt.client as mqtt
+import json
+import logging
+import time
 from threading import Thread
 
-from homeassistant.const import STATE_CLOSED, STATE_OPEN, STATE_CLOSING, STATE_OPENING, STATE_ON, STATE_OFF, \
-    STATE_UNKNOWN
-
+import paho.mqtt.client as mqtt
 from homeassistant.components.climate import HVACMode
+from homeassistant.const import (
+    STATE_CLOSED,
+    STATE_CLOSING,
+    STATE_OFF,
+    STATE_ON,
+    STATE_OPEN,
+    STATE_OPENING,
+    STATE_UNKNOWN,
+)
 
-from .scene import ComelitScenario
-from .sensor import PowerSensor, TemperatureSensor, HumiditySensor
-from .light import ComelitLight
-from .cover import ComelitCover
-from .switch import ComelitSwitch
 from .climate import ComelitClimate
-import logging
+from .cover import ComelitCover
+from .light import ComelitLight
+from .scene import ComelitScenario
+from .sensor import HumiditySensor, PowerSensor, TemperatureSensor
+from .switch import ComelitSwitch
 
 _LOGGER = logging.getLogger(__name__)
 
 COMELIT_HUB_COMPONENTS = [
-    'climate',
-    'light',
-    'sensor',
-    'switch',
+    "climate",
+    "light",
+    "sensor",
+    "switch",
 ]
 
 
@@ -41,36 +47,36 @@ class RequestType:
 
 
 class HubFields:
-    TOKEN = 'sessiontoken'
-    TEMPERATURE = 'temperatura'
-    TARGET_TEMPERATURE = 'soglia_attiva'
-    HUMIDITY = 'umidita'
-    DESCRIPTION = 'descrizione'
-    INSTANT_POWER = 'instant_power'
-    ID = 'id'
-    PRODUCTION = 'prod'
-    ELEMENTS = 'elements'
-    COVER_STATUS = 'open_status'
-    STATUS = 'status'
-    DATA = 'data'
-    PARAMETER_NAME = 'param_name'
-    PARAMETER_VALUE = 'param_value'
-    SUB_TYPE = 'sub_type'
-    WINTER_SEASON = 'est_inv'
+    TOKEN = "sessiontoken"
+    TEMPERATURE = "temperatura"
+    TARGET_TEMPERATURE = "soglia_attiva"
+    HUMIDITY = "umidita"
+    DESCRIPTION = "descrizione"
+    INSTANT_POWER = "instant_power"
+    ID = "id"
+    PRODUCTION = "prod"
+    ELEMENTS = "elements"
+    COVER_STATUS = "open_status"
+    STATUS = "status"
+    DATA = "data"
+    PARAMETER_NAME = "param_name"
+    PARAMETER_VALUE = "param_value"
+    SUB_TYPE = "sub_type"
+    WINTER_SEASON = "est_inv"
 
 
 class HubClasses:
-    LOGICAL = 'GEN#PL'
-    AUTOMATION = 'DOM#AU'
-    LIGHT = 'DOM#LT'
-    FTV = 'DOM#CN'
-    POWER_CONSUMPTION = 'DOM#CN'
-    LOAD = 'DOM#LC'
-    TEMPERATURE = 'DOM#CL'
-    SCENARIO = 'DOM#LD'
-    COVER = 'DOM#BL'
-    SCENARIO = 'GEN#SC'
-    OTHER = 'DOM#LD'
+    LOGICAL = "GEN#PL"
+    AUTOMATION = "DOM#AU"
+    LIGHT = "DOM#LT"
+    FTV = "DOM#CN"
+    POWER_CONSUMPTION = "DOM#CN"
+    LOAD = "DOM#LC"
+    TEMPERATURE = "DOM#CL"
+    SCENARIO = "DOM#LD"
+    COVER = "DOM#BL"
+    SCENARIO = "GEN#SC"
+    OTHER = "DOM#LD"
 
 
 # Publish message to mqtt
@@ -107,35 +113,49 @@ def disconnect_callback(client, userdata, rc):
 
 # Manage lights, switch and covers
 class CommandHub:
-
     def __init__(self, hub):
         self._hub = hub
 
-    def on(self, req_type, id, brightness=None):
+    def on(self, req_type, id, brightness=None, color=None):
         try:
-            if brightness is None:
+            if brightness is None and color is None:
                 act_params = [1]
                 act_type = 0
+            elif color is not None:
+                act_type = 15
+                act_params = [*color, brightness]
             else:
                 if req_type is not RequestType.LIGHT:
-                    _LOGGER.error(f'Requested brightness change for a {req_type}!?')
+                    _LOGGER.error(f"Requested brightness change for a {req_type}!?")
                 act_params = [brightness, -1]
                 act_type = 11
 
-            req = {"req_type": req_type, "req_sub_type": 3, "obj_id": id, "act_type": act_type, "act_params": act_params}
+            req = {
+                "req_type": req_type,
+                "req_sub_type": 3,
+                "obj_id": id,
+                "act_type": act_type,
+                "act_params": act_params,
+            }
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error opening %s", e)
 
     def off(self, req_type, id):
         try:
-            req = {"req_type": req_type , "req_sub_type": 3, "obj_id": id, "act_type": 0, "act_params": [0]}
+            req = {
+                "req_type": req_type,
+                "req_sub_type": 3,
+                "obj_id": id,
+                "act_type": 0,
+                "act_params": [0],
+            }
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error closing %s", e)
 
-    def light_on(self, id, brightness=None):
-        self.on(RequestType.LIGHT, id, brightness)
+    def light_on(self, id, brightness=None, color=None):
+        self.on(RequestType.LIGHT, id, brightness, color)
 
     def light_off(self, id):
         self.off(RequestType.LIGHT, id)
@@ -151,8 +171,14 @@ class CommandHub:
 
     def cover_position(self, id, position):
         try:
-            _LOGGER.info(f'Setting cover {id} to position {position}')
-            req = {"req_type": RequestType.COVER, "req_sub_type": 3, "obj_id": id, "act_type": 52, "act_params": [int(position*255/100)]}
+            _LOGGER.info(f"Setting cover {id} to position {position}")
+            req = {
+                "req_type": RequestType.COVER,
+                "req_sub_type": 3,
+                "obj_id": id,
+                "act_type": 52,
+                "act_params": [int(position * 255 / 100)],
+            }
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error setting position %s", e)
@@ -162,15 +188,21 @@ class CommandHub:
 
     def climate_set_temperature(self, id, temperature):
         try:
-            _LOGGER.info(f'Setting climate {id} to temperature {temperature}')
-            req = {"req_type": RequestType.TEMPERATURE, "req_sub_type": 3, "obj_id": id, "act_type": 2, "act_params": [int(temperature*10)]}
+            _LOGGER.info(f"Setting climate {id} to temperature {temperature}")
+            req = {
+                "req_type": RequestType.TEMPERATURE,
+                "req_sub_type": 3,
+                "obj_id": id,
+                "act_type": 2,
+                "act_params": [int(temperature * 10)],
+            }
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error setting temperature %s", e)
 
     def climate_set_state(self, id, state):
         try:
-            _LOGGER.info(f'Setting climate {id} to state {state}')
+            _LOGGER.info(f"Setting climate {id} to state {state}")
             if state == HVACMode.HEAT:
                 act_type = 4
                 act_params = [1]
@@ -181,7 +213,13 @@ class CommandHub:
             else:
                 act_type = 0
                 act_params = [0]
-            req = {"req_type": RequestType.TEMPERATURE, "req_sub_type": 3, "obj_id": id, "act_type": act_type, "act_params": act_params}
+            req = {
+                "req_type": RequestType.TEMPERATURE,
+                "req_sub_type": 3,
+                "obj_id": id,
+                "act_type": act_type,
+                "act_params": act_params,
+            }
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error setting climate state %s", e)
@@ -189,22 +227,37 @@ class CommandHub:
 
 # Manage scenario
 class SceneHub:
-
     def __init__(self, hub):
         self._hub = hub
 
     def activate(self, id):
         _LOGGER.info("SCENE %s", id)
         try:
-            req = {"req_type": RequestType.SCENARIO, "req_sub_type": 3, "obj_id": id, "act_type": 1000, "act_params": []}
+            req = {
+                "req_type": RequestType.SCENARIO,
+                "req_sub_type": 3,
+                "obj_id": id,
+                "act_type": 1000,
+                "act_params": [],
+            }
             self._hub.publish(req)
         except Exception as e:
             _LOGGER.exception("Error activating the scenario %s", e)
 
 
 class ComelitHub:
-
-    def __init__(self, client_name, hub_serial, hub_host, mqtt_port, mqtt_user, mqtt_password, hub_user, hub_password, scan_interval):
+    def __init__(
+        self,
+        client_name,
+        hub_serial,
+        hub_host,
+        mqtt_port,
+        mqtt_user,
+        mqtt_password,
+        hub_user,
+        hub_password,
+        scan_interval,
+    ):
         """Initialize the sensor."""
         self.sensors = {}
         self.climates = {}
@@ -228,7 +281,11 @@ class ComelitHub:
         self._vip = None
         self._music = None
         self.client = mqtt.Client(client_id=client_name)
-        _LOGGER.info("{0} {1}:{2} {3}".format("Starting Comelit Hub integration", hub_host, mqtt_port, hub_serial))
+        _LOGGER.info(
+            "{0} {1}:{2} {3}".format(
+                "Starting Comelit Hub integration", hub_host, mqtt_port, hub_serial
+            )
+        )
         self.topic_rx = "{0}/{1}/{2}/{3}".format("HSrv", hub_serial, "rx", client_name)
         self.topic_tx = "{0}/{1}/{2}/{3}".format("HSrv", hub_serial, "tx", client_name)
         self.client.hub = self
@@ -241,7 +298,7 @@ class ComelitHub:
         self.status_thread = StatusUpdater("Thread#1", self._scan_interval, self)
 
     def start(self):
-        
+
         self.client.loop_start()
         self.status_thread.start()
 
@@ -264,10 +321,15 @@ class ComelitHub:
             _LOGGER.error(e)
 
     def manage_announce(self, payload):
-        self.agent_id = payload['out_data'][0]["agent_id"]
+        self.agent_id = payload["out_data"][0]["agent_id"]
         _LOGGER.debug("Announce. Agent id is %s", self.agent_id)
-        req = {"req_type": RequestType.LOGIN, "req_sub_type": -1, "agent_type": 0, "user_name": self.hub_user,
-               "password": self.hub_password}
+        req = {
+            "req_type": RequestType.LOGIN,
+            "req_sub_type": -1,
+            "agent_type": 0,
+            "user_name": self.hub_user,
+            "password": self.hub_password,
+        }
         self.publish(req)
 
     def token(self, payload):
@@ -298,21 +360,30 @@ class ComelitHub:
         self.publish(req)
 
     def publish(self, data):
-        publish(self.client, self.topic_rx, self.agent_id, self.sequence_id, self.sessiontoken, data)
+        publish(
+            self.client,
+            self.topic_rx,
+            self.agent_id,
+            self.sequence_id,
+            self.sessiontoken,
+            data,
+        )
         self.sequence_id = self.sequence_id + 1
 
     def update_sensor(self, id, description, data):
         try:
             if HubClasses.POWER_CONSUMPTION in id or HubClasses.FTV in id:
-                value = format(float(data[HubFields.INSTANT_POWER]), '.2f')
+                value = format(float(data[HubFields.INSTANT_POWER]), ".2f")
                 prod = data[HubFields.PRODUCTION] == "1"
                 sensor = PowerSensor(id, description, value, prod)
             else:
-                value = format(float(data[HubFields.TEMPERATURE]), '.1f')
+                value = format(float(data[HubFields.TEMPERATURE]), ".1f")
                 value = float(value) / 10
                 sensor = TemperatureSensor(id, description, value)
 
-                if data["type"] == 9 and data["sub_type"] == 16:# Add the humidity sensor
+                if (
+                    data["type"] == 9 and data["sub_type"] == 16
+                ):  # Add the humidity sensor
                     humidity = data[HubFields.HUMIDITY]
                     humidity_sensor = HumiditySensor(id, description, humidity)
                     self.add_or_update_sensor(humidity_sensor, humidity)
@@ -324,7 +395,7 @@ class ComelitHub:
     def add_or_update_sensor(self, sensor, value):
         name = sensor.entity_name
         if sensor.name not in self.sensors:  # Add the new sensor
-            if hasattr(self, 'sensor_add_entities'):
+            if hasattr(self, "sensor_add_entities"):
                 self.sensor_add_entities([sensor])
                 self.sensors[name] = sensor
                 _LOGGER.info("added the sensor %s", name)
@@ -336,30 +407,32 @@ class ComelitHub:
         try:
             assert HubClasses.TEMPERATURE in id
             # _LOGGER.debug("update_climate: %s has data %s", description, data)
-            measured_temp = format(float(data[HubFields.TEMPERATURE]), '.1f')
+            measured_temp = format(float(data[HubFields.TEMPERATURE]), ".1f")
             measured_temp = float(measured_temp) / 10
 
-            target = format(float(data[HubFields.TARGET_TEMPERATURE]), '.1f')
+            target = format(float(data[HubFields.TARGET_TEMPERATURE]), ".1f")
             target = float(target) / 10
 
-            is_enabled = int(data['auto_man']) == 2
+            is_enabled = int(data["auto_man"]) == 2
             is_winter_season = bool(int(data[HubFields.WINTER_SEASON]))
             status = bool(int(data[HubFields.STATUS]))
-            state_dict = {'is_enabled': is_enabled,
-            'is_winter_season': is_winter_season,
-            'status': status,
-            'measured_temperature': measured_temp,
-            'target_temperature': target}
+            state_dict = {
+                "is_enabled": is_enabled,
+                "is_winter_season": is_winter_season,
+                "status": status,
+                "measured_temperature": measured_temp,
+                "target_temperature": target,
+            }
 
             # support sensors without humidity
             if HubFields.HUMIDITY in data:
-                state_dict['measured_humidity'] = float(data[HubFields.HUMIDITY])
+                state_dict["measured_humidity"] = float(data[HubFields.HUMIDITY])
 
             climate = ComelitClimate(id, description, state_dict, CommandHub(self))
 
             name = climate.entity_name
             if climate.name not in self.climates:  # Add the new sensor
-                if hasattr(self, 'climate_add_entities'):
+                if hasattr(self, "climate_add_entities"):
                     self.climate_add_entities([climate])
                     self.climates[name] = climate
                     _LOGGER.info("added the climate %s", name)
@@ -372,55 +445,71 @@ class ComelitHub:
     def update_light(self, id, description, data):
         try:
             # _LOGGER.debug("update_light: %s has data %s", description, data)
-            
+
             # Dimmable light (3=light, 4=dimmable)
             if data["type"] == 3 and data["sub_type"] == 4:
                 brightness = int(data["bright"])
+                rgb = None
+            elif data["type"] == 3 and data["sub_type"] == 2:
+                brightness = int(data["bright"])
+                rgb = tuple(int(x) for x in data["rgb_value"])
             else:
                 brightness = None
+                rgb = None
 
-            if data["status"] == "1":
-                state = STATE_ON
-            else:
+            if data["status"] == "0":
                 state = STATE_OFF
+            else:
+                state = STATE_ON
 
-            light = ComelitLight(id, description, state, brightness, CommandHub(self))
+            light = ComelitLight(
+                id, description, state, brightness, rgb, CommandHub(self)
+            )
             if id not in self.lights:  # Add the new sensor
-                if hasattr(self, 'light_add_entities'):
+                if hasattr(self, "light_add_entities"):
                     self.light_add_entities([light])
                     self.lights[id] = light
-                    _LOGGER.info("added the light %s %s", description, light.entity_name)
+                    _LOGGER.info(
+                        "added the light %s %s", description, light.entity_name
+                    )
             else:
                 # _LOGGER.debug(f"updating the light {description} {light.entity_name} with state {state}")
-                self.lights[id].update_state(state)
+                self.lights[id].sync_with_hub(state, brightness, rgb)
         except Exception as e:
             _LOGGER.exception("Error updating light %s", e)
 
     def update_cover(self, id, description, data, status_key):
         try:
-            if 'position' in data:
-                if data['status'] == '0':
+            if "position" in data:
+                if data["status"] == "0":
                     # Not moving
-                    if data[status_key] == '1':
+                    if data[status_key] == "1":
                         state = STATE_OPEN
                     else:
                         state = STATE_CLOSED
-                elif data['status'] == '1':
+                elif data["status"] == "1":
                     state = STATE_OPENING
-                elif data['status'] == '2':
+                elif data["status"] == "2":
                     state = STATE_CLOSING
 
-                position = int(100 * float(data['position']) / 255)
+                position = int(100 * float(data["position"]) / 255)
             else:  # unable to define the position. works for legacy cover
                 state = STATE_UNKNOWN
                 position = -1
 
-            if id in self.covers: 
-                _LOGGER.debug("update_cover: updating the cover %s with state %s and position %f", id, state, position)
+            if id in self.covers:
+                _LOGGER.debug(
+                    "update_cover: updating the cover %s with state %s and position %f",
+                    id,
+                    state,
+                    position,
+                )
                 self.covers[id].update_state(state, position)
             else:  # Add the new cover
-                if hasattr(self, 'cover_add_entities'):
-                    cover = ComelitCover(id, description, state, position, CommandHub(self))
+                if hasattr(self, "cover_add_entities"):
+                    cover = ComelitCover(
+                        id, description, state, position, CommandHub(self)
+                    )
                     self.cover_add_entities([cover])
                     self.covers[id] = cover
                     _LOGGER.info("update_cover: added the cover %s %s", description, id)
@@ -432,7 +521,7 @@ class ComelitHub:
         try:
             scene = ComelitScenario(id, description, SceneHub(self))
             if id not in self.scenes:  # Add the new cover
-                if hasattr(self, 'scene_add_entities'):
+                if hasattr(self, "scene_add_entities"):
                     self.scene_add_entities([scene])
                     self.scenes[id] = scene
                     _LOGGER.info("added the scene %s %s", description, id)
@@ -442,13 +531,13 @@ class ComelitHub:
     def update_switch(self, id, description, data):
         try:
             switch = ComelitSwitch(id, description, None, CommandHub(self))
-            if data[HubFields.STATUS] == '1':
+            if data[HubFields.STATUS] == "1":
                 state = STATE_ON
             else:
                 state = STATE_OFF
 
             if id not in self.switches:  # Add the new cover
-                if hasattr(self, 'switch_add_entities'):
+                if hasattr(self, "switch_add_entities"):
                     self.switch_add_entities([switch])
                     self.switches[id] = switch
                     _LOGGER.info("added the switch %s %s", description, id)
@@ -478,14 +567,19 @@ class ComelitHub:
                 except Exception:
                     pass
 
-                if HubClasses.POWER_CONSUMPTION in entity_id or HubClasses.FTV in entity_id:
+                if (
+                    HubClasses.POWER_CONSUMPTION in entity_id
+                    or HubClasses.FTV in entity_id
+                ):
                     description = item[HubFields.DESCRIPTION]
                     self.update_sensor(entity_id, description, item)
                 elif HubClasses.TEMPERATURE in entity_id:
                     description = item[HubFields.DESCRIPTION]
                     self.update_sensor(entity_id, description, item)
                     # skip creating the climate sensor for the PT100 sensor and add compatibility for ONE
-                    if HubFields.SUB_TYPE in item and (item["sub_type"] == 16 or item["sub_type"] == 12):# skip creating the climate sensor for the PT100 sensor
+                    if HubFields.SUB_TYPE in item and (
+                        item["sub_type"] == 16 or item["sub_type"] == 12
+                    ):  # skip creating the climate sensor for the PT100 sensor
                         self.update_climate(entity_id, description, item)
                 elif HubClasses.LIGHT in entity_id:
                     description = item[HubFields.DESCRIPTION]
@@ -493,7 +587,9 @@ class ComelitHub:
                 elif HubClasses.COVER in entity_id:
                     description = item[HubFields.DESCRIPTION]
                     _LOGGER.debug("processing cover %s: %s", description, item)
-                    self.update_cover(entity_id, description, item, HubFields.COVER_STATUS)
+                    self.update_cover(
+                        entity_id, description, item, HubFields.COVER_STATUS
+                    )
                 elif HubClasses.AUTOMATION in entity_id:
                     description = item[HubFields.DESCRIPTION]
                     self.update_cover(entity_id, description, item, HubFields.STATUS)
@@ -522,7 +618,12 @@ class ComelitHub:
 def update_status(hub):
     try:
         _LOGGER.debug("Publishing the status request")
-        req = {"req_type": RequestType.STATUS, "req_sub_type": -1, "obj_id": "GEN#17#13#1", "detail_level": 1}
+        req = {
+            "req_type": RequestType.STATUS,
+            "req_sub_type": -1,
+            "obj_id": "GEN#17#13#1",
+            "detail_level": 1,
+        }
         hub.publish(req)
     except Exception as e:
         _LOGGER.error("Error updating status")
@@ -530,7 +631,7 @@ def update_status(hub):
 
 
 # Make a request for status
-class StatusUpdater (Thread):
+class StatusUpdater(Thread):
     def __init__(self, name, scan_interval, hub):
         Thread.__init__(self)
         self.name = name
@@ -545,4 +646,3 @@ class StatusUpdater (Thread):
 
             update_status(self.hub)
             time.sleep(self._scan_interval)
-

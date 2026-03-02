@@ -10,7 +10,7 @@ from custom_components.comelit.light import ComelitLight
 @pytest.fixture
 def comelit_light():
     light_hub = Mock()
-    light = ComelitLight("id", "description", STATE_ON, 255, light_hub)
+    light = ComelitLight("id", "description", STATE_ON, 255, None, light_hub)
     light.schedule_update_ha_state = lambda *args, **kwargs: None
     return light
 

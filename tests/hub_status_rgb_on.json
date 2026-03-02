@@ -1,0 +1,254 @@
+{
+  "req_type": 0,
+  "req_sub_type": -1,
+  "seq_id": 1,
+  "req_result": 0,
+  "out_data": [
+    {
+      "id": "GEN#17#13#1",
+      "type": 1001,
+      "sub_type": 13,
+      "descrizione": "root",
+      "sched_status": "0",
+      "status": "0",
+      "powerst": "0",
+      "schedZoneStatus": [
+        0,
+        0,
+        0
+      ],
+      "elements": [
+        {
+          "id": "GEN#PL#388",
+          "data": {
+            "id": "GEN#PL#388",
+            "type": 1001,
+            "sub_type": 13,
+            "descrizione": "Luci P1",
+            "sched_status": "0",
+            "status": "0",
+            "powerst": "0",
+            "schedZoneStatus": [
+              0,
+              0,
+              0
+            ],
+            "placeOrder": "0",
+            "elements": [
+              {
+                "id": "DOM#LT#32.1",
+                "data": {
+                  "id": "DOM#LT#32.1",
+                  "type": 3,
+                  "sub_type": 4,
+                  "descrizione": "Corridoio",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "num_modulo": "32",
+                  "num_uscita": "1",
+                  "zero_dimmer": "3",
+                  "presenza": "0",
+                  "icon_id": "0",
+                  "isProtected": "0",
+                  "objectId": "DOM#LT#32.1",
+                  "placeId": "GEN#PL#388",
+                  "value": "255",
+                  "bright": "255",
+                  "presenza_on": "0",
+                  "presente": "0",
+                  "auto_man_pid_dimmer": "0"
+                }
+              },
+              {
+                "id": "DOM#LT#40.1",
+                "data": {
+                  "id": "DOM#LT#40.1",
+                  "type": 3,
+                  "sub_type": 2,
+                  "descrizione": "Camera RGB",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "num_modulo": "40",
+                  "num_uscita": "1",
+                  "icon_id": "0",
+                  "isProtected": "0",
+                  "objectId": "DOM#LT#40.1",
+                  "placeId": "GEN#PL#388",
+                  "rgb_value": [
+                    "248",
+                    "252",
+                    "128"
+                  ],
+                  "rgb_value_raw": [
+                    "248",
+                    "252",
+                    "128"
+                  ],
+                  "rgb_value_888": [
+                    "255",
+                    "255",
+                    "131"
+                  ],
+                  "bright": "255"
+                }
+              },
+              {
+                "id": "DOM#LT#33.1",
+                "data": {
+                  "id": "DOM#LT#33.1",
+                  "type": 3,
+                  "sub_type": 4,
+                  "descrizione": "Bagno",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "num_modulo": "33",
+                  "num_uscita": "1",
+                  "zero_dimmer": "3",
+                  "presenza": "0",
+                  "icon_id": "0",
+                  "isProtected": "0",
+                  "objectId": "DOM#LT#33.1",
+                  "placeId": "GEN#PL#388",
+                  "value": "201",
+                  "bright": "201",
+                  "presenza_on": "0",
+                  "presente": "0",
+                  "auto_man_pid_dimmer": "0"
+                }
+              },
+              {
+                "id": "DOM#LT#10.1",
+                "data": {
+                  "id": "DOM#LT#10.1",
+                  "type": 3,
+                  "sub_type": 1,
+                  "descrizione": "Lavanderia",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "num_modulo": 10,
+                  "num_uscita": 1,
+                  "ConsumptionThreshold": -1,
+                  "isShiomMis": 0,
+                  "instant_power": 0,
+                  "totalConsumption": -1,
+                  "isDetached": 0,
+                  "icon_id": "0",
+                  "isProtected": "0",
+                  "objectId": "DOM#LT#10.1",
+                  "placeId": "GEN#PL#388"
+                }
+              },
+              {
+                "id": "DOM#LT#10.2",
+                "data": {
+                  "id": "DOM#LT#10.2",
+                  "type": 3,
+                  "sub_type": 1,
+                  "descrizione": "Camera Ospiti",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "num_modulo": 10,
+                  "num_uscita": 2,
+                  "ConsumptionThreshold": -1,
+                  "isShiomMis": 0,
+                  "instant_power": 0,
+                  "totalConsumption": -1,
+                  "isDetached": 0,
+                  "icon_id": "0",
+                  "isProtected": "0",
+                  "objectId": "DOM#LT#10.2",
+                  "placeId": "GEN#PL#388"
+                }
+              },
+              {
+                "id": "DOM#LT#10.3",
+                "data": {
+                  "id": "DOM#LT#10.3",
+                  "type": 3,
+                  "sub_type": 1,
+                  "descrizione": "Studio",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "num_modulo": 10,
+                  "num_uscita": 3,
+                  "ConsumptionThreshold": -1,
+                  "isShiomMis": 0,
+                  "instant_power": 0,
+                  "totalConsumption": -1,
+                  "isDetached": 0,
+                  "icon_id": "0",
+                  "isProtected": "0",
+                  "objectId": "DOM#LT#10.3",
+                  "placeId": "GEN#PL#388"
+                }
+              },
+              {
+                "id": "DOM#LT#48.1",
+                "data": {
+                  "id": "DOM#LT#48.1",
+                  "type": 3,
+                  "sub_type": 2,
+                  "descrizione": "Bagno RGB",
+                  "sched_status": "0",
+                  "status": "7",
+                  "powerst": "7",
+                  "num_modulo": "48",
+                  "num_uscita": "1",
+                  "icon_id": "0",
+                  "isProtected": "0",
+                  "objectId": "DOM#LT#48.1",
+                  "placeId": "GEN#PL#388",
+                  "rgb_value": [
+                    "16",
+                    "66",
+                    "248"
+                  ],
+                  "rgb_value_raw": [
+                    "7",
+                    "31",
+                    "119"
+                  ],
+                  "rgb_value_888": [
+                    "8",
+                    "32",
+                    "123"
+                  ],
+                  "bright": "123"
+                }
+              },
+              {
+                "id": "DOM#LT#10.8",
+                "data": {
+                  "id": "DOM#LT#10.8",
+                  "type": 3,
+                  "sub_type": 1,
+                  "descrizione": "Ventola Lavanderia",
+                  "sched_status": "0",
+                  "status": "0",
+                  "powerst": "0",
+                  "num_modulo": 10,
+                  "num_uscita": 8,
+                  "ConsumptionThreshold": -1,
+                  "isShiomMis": 0,
+                  "instant_power": 0,
+                  "totalConsumption": -1,
+                  "isDetached": 0,
+                  "icon_id": "0",
+                  "isProtected": "0",
+                  "objectId": "DOM#LT#10.8",
+                  "placeId": "GEN#PL#388"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
