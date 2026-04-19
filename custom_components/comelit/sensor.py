@@ -6,6 +6,7 @@ from homeassistant.const import (
 )
 from homeassistant.components.sensor import (
     SensorDeviceClass,
+    SensorStateClass,
 )
 
 from .const import DOMAIN
@@ -21,13 +22,15 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
 class ComelitSensor(ComelitDevice):
 
-    def __init__(self, id, description, state, type, icon, unit_of_measurement, device_class):
+    def __init__(self, id, description, state, type, icon, unit_of_measurement, device_class,
+                 state_class=None):
         ComelitDevice.__init__(self, id, type, description)
         self._type = type
         self._icon = icon
         self._state = state
         self._unit_of_measurement = unit_of_measurement
         self._device_class = device_class
+        self._state_class = state_class
 
     @property
     def unit_of_measurement(self):
@@ -49,6 +52,10 @@ class ComelitSensor(ComelitDevice):
     def device_class(self):
         return self._device_class
 
+    @property
+    def state_class(self):
+        return self._state_class
+
 
 class PowerSensor(ComelitSensor):
     def __init__(self, id, description, value, prod):
@@ -61,7 +68,7 @@ class PowerSensor(ComelitSensor):
             power_type = "power_cons"
             icon = "mdi:power-plug"
         ComelitSensor.__init__(self, id, description, value, power_type, icon, UnitOfPower.WATT,
-                               SensorDeviceClass.POWER)
+                               SensorDeviceClass.POWER, SensorStateClass.MEASUREMENT)
 
 
 class TemperatureSensor(ComelitSensor):
