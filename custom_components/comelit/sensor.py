@@ -39,7 +39,7 @@ class ComelitSensor(ComelitDevice):
 
     @property
     def icon(self):
-        self._icon
+        return self._icon
 
     # @property
     # def state(self):
