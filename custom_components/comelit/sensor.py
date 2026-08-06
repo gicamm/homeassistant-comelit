@@ -7,6 +7,7 @@ from homeassistant.const import (
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorStateClass,
+    SensorEntity, # <-- Added
 )
 
 from .const import DOMAIN
@@ -20,7 +21,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     _LOGGER.info("Comelit Sensor Integration started")
 
 
-class ComelitSensor(ComelitDevice):
+class ComelitSensor(ComelitDevice, SensorEntity): # <-- Changed
 
     def __init__(self, id, description, state, type, icon, unit_of_measurement, device_class,
                  state_class=None):
@@ -77,11 +78,11 @@ class TemperatureSensor(ComelitSensor):
     def __init__(self, id, description, value):
         """Initialize the sensor."""
         ComelitSensor.__init__(self, id, description, value, "temperature", "mdi:home-thermometer",
-                               UnitOfTemperature.CELSIUS, SensorDeviceClass.TEMPERATURE)
+                               UnitOfTemperature.CELSIUS, SensorDeviceClass.TEMPERATURE, SensorStateClass.MEASUREMENT) # <-- Added)
 
 
 class HumiditySensor(ComelitSensor):
     def __init__(self, id, description, value):
         """Initialize the sensor."""
-        ComelitSensor.__init__(self, id, description, value, "humidity", "mdi:water-percent", "%",
-                               SensorDeviceClass.HUMIDITY)
+        ComelitSensor.__init__(self, id, description, value, "humidity", "mdi:water-percent",
+                               "%", SensorDeviceClass.HUMIDITY, SensorStateClass.MEASUREMENT) # <-- Added)
