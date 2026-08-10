@@ -312,7 +312,7 @@ class ComelitHub:
                 value = float(value) / 10
                 sensor = TemperatureSensor(id, description, value)
 
-                if data["type"] == 9 and data["sub_type"] == 16:# Add the humidity sensor
+                if data["type"] == 9 and data["sub_type"] == 16 and data["sub_type"] == 20:# Add the humidity sensor also for one/h
                     humidity = data[HubFields.HUMIDITY]
                     humidity_sensor = HumiditySensor(id, description, humidity)
                     self.add_or_update_sensor(humidity_sensor, humidity)
@@ -484,8 +484,8 @@ class ComelitHub:
                 elif HubClasses.TEMPERATURE in entity_id:
                     description = item[HubFields.DESCRIPTION]
                     self.update_sensor(entity_id, description, item)
-                    # skip creating the climate sensor for the PT100 sensor and add compatibility for ONE
-                    if HubFields.SUB_TYPE in item and (item["sub_type"] == 16 or item["sub_type"] == 12):# skip creating the climate sensor for the PT100 sensor
+                    # skip creating the climate sensor for the PT100 sensor and add compatibility for ONE and ONE/H
+                    if HubFields.SUB_TYPE in item and (item["sub_type"] == 16 or item["sub_type"] == 12 or item["sub_type"] == 20):# skip creating the climate sensor for the PT100 sensor
                         self.update_climate(entity_id, description, item)
                 elif HubClasses.LIGHT in entity_id:
                     description = item[HubFields.DESCRIPTION]
