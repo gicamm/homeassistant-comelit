@@ -73,7 +73,6 @@ class HubClasses:
     POWER_CONSUMPTION = "DOM#CN"
     LOAD = "DOM#LC"
     TEMPERATURE = "DOM#CL"
-    SCENARIO = "DOM#LD"
     COVER = "DOM#BL"
     SCENARIO = "GEN#SC"
     OTHER = "DOM#LD"
