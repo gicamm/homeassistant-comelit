@@ -1,22 +1,24 @@
 """Platform for sensor integration."""
 
 import json
-import time
-import requests
 import logging
 from threading import Thread
-from wrapt_timeout_decorator import timeout
+import time
+
 from homeassistant.components.alarm_control_panel import AlarmControlPanelState
-from homeassistant.const import STATE_ON, STATE_OFF
-from custom_components.comelit.binary_sensor import VedoSensor
+from homeassistant.const import STATE_OFF, STATE_ON
+import requests
+from wrapt_timeout_decorator import timeout
+
 from custom_components.comelit.alarm_control_panel import VedoAlarm
+from custom_components.comelit.binary_sensor import VedoSensor
 from custom_components.comelit.exception import CookieException
 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_HEADERS = {
-    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    'Accept-Language': 'it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3'
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
 }
 
 DEFAULT_TIMEOUT = 10
@@ -34,7 +36,6 @@ class VedoRequest:
 
 # Manage the Comelit Vedo Central. Fetches the alarm status and the motion status.
 class ComelitVedo:
-
     def __init__(self, host, port, password, scan_interval, expose_bin_sensors):
         """Initialize the sensor."""
         _LOGGER.info(f"Initialising ComelitVedo with host {host}, port {port}")
@@ -54,19 +55,21 @@ class ComelitVedo:
         if headers is None:
             headers = {}
 
-        headers['User-Agent'] = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0'
-        headers['X-Requested-With'] = 'XMLHttpRequest'
-        headers['Accept'] = '*/*'
-        headers['Connection'] = 'keep-alive'
+        headers["User-Agent"] = (
+            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
+        )
+        headers["X-Requested-With"] = "XMLHttpRequest"
+        headers["Accept"] = "*/*"
+        headers["Connection"] = "keep-alive"
 
         if uid is not None:
-            headers['Cookie'] = uid
+            headers["Cookie"] = uid
 
         millis = int(round(time.time() * 1000))
         if "?" in path:
-            url = "http://{0}:{1}/{2}&_={3}".format(self.host, self.port, path, millis)
+            url = f"http://{self.host}:{self.port}/{path}&_={millis}"
         else:
-            url = "http://{0}:{1}/{2}?_={3}".format(self.host, self.port, path, millis)
+            url = f"http://{self.host}:{self.port}/{path}?_={millis}"
         return url, headers
 
     # Do the GET from the vedo IP
@@ -77,17 +80,18 @@ class ComelitVedo:
         _LOGGER.info(f"GET: url {url}, headers {headers}")
         response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
         response.raise_for_status()
-        text = response.content.decode('iso-8859-1').encode('utf-8')
+        text = response.content.decode("iso-8859-1").encode("utf-8")
         if is_response:
             payload = json.loads(text)
             return payload
-        else:
-            return text
+        return text
 
     # Do the POST to the vedo IP
     @timeout(DEFAULT_TIMEOUT, use_signals=True)
     def post(self, url, params, headers):
-        response = requests.post(url, data=params, headers=headers, timeout=DEFAULT_TIMEOUT)
+        response = requests.post(
+            url, data=params, headers=headers, timeout=DEFAULT_TIMEOUT
+        )
         return response
 
     # Do the login. Raise an exception if not able to get the cookie
@@ -98,16 +102,14 @@ class ComelitVedo:
         response = self.post(url, params, headers)
         response.raise_for_status()
         if response.status_code == 200:
-            uid = response.headers.get('set-cookie')
+            uid = response.headers.get("set-cookie")
             if uid is not None:
                 _LOGGER.debug("Logged in, %s", response.text)
                 return uid
-            else:
-                _LOGGER.warning("Error doing the login %s", response.text)
-                raise Exception("Unable to obtain the cookie")
-        else:
-            _LOGGER.error("Bad login response! - %s", response.text)
-            return None
+            _LOGGER.warning("Error doing the login %s", response.text)
+            raise Exception("Unable to obtain the cookie")
+        _LOGGER.error("Bad login response! - %s", response.text)
+        return None
 
     # Do the logout. Ignore errors
     def logout(self, uid):
@@ -124,10 +126,10 @@ class ComelitVedo:
 
     # Arm/Disarm the alarm. Try 5 times
     def arm_disarm(self, key, id):
-        for i in range(1, ARM_DISARM_ATTEMPT+1):
+        for i in range(1, ARM_DISARM_ATTEMPT + 1):
             try:
                 uid = self.login()
-                path = "{0}?vedo=1&{1}={2}&force=1".format(VedoRequest.ACTION, key, id)
+                path = f"{VedoRequest.ACTION}?vedo=1&{key}={id}&force=1"
                 self.get(uid, path, False)
                 _LOGGER.info("Armed/Disarmed the area %s", id)
                 self.logout(uid)
@@ -168,11 +170,13 @@ class ComelitVedo:
                 state = STATE_OFF
             if sensor_id not in self.sensors:
                 # Add new sensor
-                if hasattr(self, 'binary_sensor_add_entities'):
+                if hasattr(self, "binary_sensor_add_entities"):
                     sensor = VedoSensor(sensor_id, name, state)
                     self.binary_sensor_add_entities([sensor])
                     self.sensors[sensor_id] = sensor
-                    _LOGGER.info("added the binary sensor %s %s", name, sensor.entity_name)
+                    _LOGGER.info(
+                        "added the binary sensor %s %s", name, sensor.entity_name
+                    )
             else:
                 # update existing sensor
                 self.sensors[sensor_id].update_state(state)
@@ -194,11 +198,13 @@ class ComelitVedo:
                 state = AlarmControlPanelState.DISARMED
 
             if area_id not in self.areas:
-                if hasattr(self, 'alarm_add_entities'):
+                if hasattr(self, "alarm_add_entities"):
                     alarm_area = VedoAlarm(area_id, name, state, self)
                     self.alarm_add_entities([alarm_area])
                     self.areas[area_id] = alarm_area
-                    _LOGGER.info("added the alarm area %s %s", name, alarm_area.entity_name)
+                    _LOGGER.info(
+                        "added the alarm area %s %s", name, alarm_area.entity_name
+                    )
             else:
                 self.areas[area_id].update_state(state)
                 _LOGGER.debug("updated the alarm area %s", name)
@@ -208,7 +214,7 @@ class ComelitVedo:
 
 
 # Update the binary sensors
-class SensorUpdater (Thread):
+class SensorUpdater(Thread):
     def __init__(self, name, scan_interval, vedo: ComelitVedo):
         Thread.__init__(self)
         self.name = name
@@ -253,11 +259,16 @@ class SensorUpdater (Thread):
 
                 for i in range(len(in_area)):
                     value = in_area[i]
-                    if value == 'Not logged':
+                    if value == "Not logged":
                         raise CookieException("cookie expired")
 
                     if value != 0:
-                        sensor_dict = {"index": i, "id": i, "name": description[i], "status": zone_statuses[i]}
+                        sensor_dict = {
+                            "index": i,
+                            "id": i,
+                            "name": description[i],
+                            "status": zone_statuses[i],
+                        }
                         _LOGGER.debug(f"Updating the zone {sensor_dict}")
                         sensors.append(sensor_dict)
 
@@ -278,18 +289,20 @@ class SensorUpdater (Thread):
                     out_time = areas_stat["out_time"]
 
                     for i in range(len(descs)):
-                        area = {"name": descs[i],
-                                "id": i,
-                                "p1_pres": p1_pres[i],
-                                "p2_pres": p2_pres[i],
-                                "ready": ready[i],
-                                "armed": armed[i],
-                                "alarm": alarm[i],
-                                "alarm_memory": alarm_memory[i],
-                                "sabotage": sabotage[i],
-                                "anomaly": anomaly[i],
-                                "in_time": in_time[i],
-                                "out_time": out_time[i]}
+                        area = {
+                            "name": descs[i],
+                            "id": i,
+                            "p1_pres": p1_pres[i],
+                            "p2_pres": p2_pres[i],
+                            "ready": ready[i],
+                            "armed": armed[i],
+                            "alarm": alarm[i],
+                            "alarm_memory": alarm_memory[i],
+                            "sabotage": sabotage[i],
+                            "anomaly": anomaly[i],
+                            "in_time": in_time[i],
+                            "out_time": out_time[i],
+                        }
                         self._vedo.update_area(area)
             except CookieException:
                 self.logout()

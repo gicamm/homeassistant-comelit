@@ -1,22 +1,24 @@
 """Platform for sensor integration."""
+
 import logging
+
 from homeassistant.components.alarm_control_panel import (
-    AlarmControlPanelEntity, AlarmControlPanelEntityFeature
+    AlarmControlPanelEntity,
+    AlarmControlPanelEntityFeature,
 )
 
-from .const import DOMAIN
 from .comelit_device import ComelitDevice
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
-    hass.data[DOMAIN]['vedo'].alarm_add_entities = add_entities
+    hass.data[DOMAIN]["vedo"].alarm_add_entities = add_entities
     _LOGGER.info("Comelit Vedo Alarm Integration started")
 
 
 class VedoAlarm(ComelitDevice, AlarmControlPanelEntity):
-
     def __init__(self, id, description, state, vedo):
         ComelitDevice.__init__(self, id, "vedo", description)
         self._vedo = vedo
@@ -41,4 +43,7 @@ class VedoAlarm(ComelitDevice, AlarmControlPanelEntity):
 
     @property
     def supported_features(self):
-        return AlarmControlPanelEntityFeature.ARM_AWAY | AlarmControlPanelEntityFeature.ARM_NIGHT
+        return (
+            AlarmControlPanelEntityFeature.ARM_AWAY
+            | AlarmControlPanelEntityFeature.ARM_NIGHT
+        )

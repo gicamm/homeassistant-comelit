@@ -11,12 +11,15 @@ class ComelitDevice(Entity):
         self._id = id
         self._state = None
         if device_type is None:
-            self._name = self.entity_name = "{0}_{1}".format(DOMAIN, name.lower().replace(' ', '-'))
-            self._unique_id = "{0}_{1}".format(DOMAIN, id)
+            self._name = self.entity_name = "{0}_{1}".format(
+                DOMAIN, name.lower().replace(" ", "-")
+            )
+            self._unique_id = f"{DOMAIN}_{id}"
         else:
-            self._name = self.entity_name = "{0}_{1}_{2}".format(DOMAIN, device_type, name.lower().replace(' ', '-'))
-            self._unique_id = "{0}_{1}_{2}".format(DOMAIN, device_type, id)
-
+            self._name = self.entity_name = "{0}_{1}_{2}".format(
+                DOMAIN, device_type, name.lower().replace(" ", "-")
+            )
+            self._unique_id = f"{DOMAIN}_{device_type}_{id}"
 
     @property
     def name(self):
@@ -34,7 +37,7 @@ class ComelitDevice(Entity):
         return self._is_available
 
     def update_state(self, state):
-        #TODO optiluca: make this more general and use it for all derived classes
+        # TODO optiluca: make this more general and use it for all derived classes
         old = self._state
         self._state = state
         if old != state:
