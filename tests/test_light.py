@@ -1,8 +1,8 @@
-import pytest
 from unittest.mock import Mock
 
-from homeassistant.components.light import ColorMode, ATTR_BRIGHTNESS
-from homeassistant.const import STATE_ON, STATE_OFF
+from homeassistant.components.light import ATTR_BRIGHTNESS, ColorMode
+from homeassistant.const import STATE_OFF, STATE_ON
+import pytest
 
 from custom_components.comelit.light import ComelitLight
 

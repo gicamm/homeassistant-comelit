@@ -2,10 +2,9 @@
 
 import json
 import logging
-import time
 from threading import Thread
+import time
 
-import paho.mqtt.client as mqtt
 from homeassistant.components.climate import HVACMode
 from homeassistant.const import (
     STATE_CLOSED,
@@ -16,6 +15,7 @@ from homeassistant.const import (
     STATE_OPENING,
     STATE_UNKNOWN,
 )
+import paho.mqtt.client as mqtt
 
 from .climate import ComelitClimate
 from .cover import ComelitCover

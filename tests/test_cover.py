@@ -9,7 +9,9 @@ from custom_components.comelit.cover import ComelitCover
 class TestComelitCover:
     def setup_method(self, method):
         self.mock_hub = mock.Mock()
-        self.device = ComelitCover('id', 'description', 'closed', 'position', self.mock_hub)
+        self.device = ComelitCover(
+            "id", "description", "closed", "position", self.mock_hub
+        )
         self.device.schedule_update_ha_state = MagicMock()
 
     def teardown_method(self, method):

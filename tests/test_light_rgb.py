@@ -29,7 +29,7 @@ RGB_ID = "DOM#LT#48.1"  # "Bagno RGB", a real light on the captured hub
 
 def load_fixture(name):
     filename = os.path.join(os.path.dirname(__file__), name)
-    with open(filename, "r") as json_file:
+    with open(filename) as json_file:
         return json.load(json_file)
 
 
@@ -55,7 +55,9 @@ def make_hub():
 
 
 def test_rgb_light_color_mode():
-    light = ComelitLight(RGB_ID, "Bagno RGB", STATE_OFF, 123, (16, 66, 248), MagicMock())
+    light = ComelitLight(
+        RGB_ID, "Bagno RGB", STATE_OFF, 123, (16, 66, 248), MagicMock()
+    )
 
     # must be a single enum value, not a set: HA core does `color_mode.value`
     assert isinstance(light.color_mode, ColorMode)
@@ -68,7 +70,9 @@ def test_rgb_light_color_mode():
 
 
 def test_onoff_light_color_mode():
-    light = ComelitLight("DOM#LT#10.1", "Lavanderia", STATE_OFF, None, None, MagicMock())
+    light = ComelitLight(
+        "DOM#LT#10.1", "Lavanderia", STATE_OFF, None, None, MagicMock()
+    )
     assert light.color_mode == ColorMode.ONOFF
     assert light.color_mode.value == "onoff"
     assert light.supported_color_modes == {ColorMode.ONOFF}

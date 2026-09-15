@@ -138,3 +138,26 @@ Below is an example with lovelace:
     name: Garage
 
 ```
+
+### Development
+
+All development tooling (dependency groups, ruff, pytest and coverage) is
+configured in `pyproject.toml`. Home Assistant itself is only a test
+dependency; the integration's runtime requirements live in
+`custom_components/comelit/manifest.json`.
+
+This repository is **not** a pip-installable package: `pip install .` will not
+work and is not meant to. Install the development dependency groups instead.
+
+Home Assistant 2025.4.x needs Python 3.13 (its dependencies have no wheels for
+3.14 yet), so pin the interpreter when creating the virtualenv:
+
+```bash
+python3.13 -m venv venv                # or: uv venv --python 3.13 venv
+source venv/bin/activate
+python3 -m pip install --upgrade pip   # `--group` needs pip >= 25.1
+python3 -m pip install --group dev     # or --group lint / --group test
+
+ruff check .    # lint
+pytest          # tests + coverage (writes coverage.xml for SonarCloud/Codecov)
+```
