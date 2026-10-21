@@ -21,6 +21,7 @@ from .climate import ComelitClimate
 from .cover import ComelitCover
 from .light import ComelitLight
 from .scene import ComelitScenario
+from .select import ComelitClimateSelect
 from .sensor import HumiditySensor, PowerSensor, TemperatureSensor
 from .switch import ComelitSwitch
 
@@ -223,6 +224,20 @@ class CommandHub:
         except Exception as e:
             _LOGGER.exception("Error setting climate state %s", e)
 
+    def climate_set_auto_man(self, id, mode):
+        """Set Comelit thermostat AUTO (1) or MANUAL (2)."""
+        if mode not in (1, 2):
+            raise ValueError(f"Unsupported Comelit thermostat mode: {mode}")
+        self._hub.publish(
+            {
+                "req_type": RequestType.TEMPERATURE,
+                "req_sub_type": 3,
+                "obj_id": id,
+                "act_type": 13,
+                "act_params": [mode],
+            }
+        )
+
 
 # Manage scenario
 class SceneHub:
@@ -260,6 +275,9 @@ class ComelitHub:
         """Initialize the sensor."""
         self.sensors = {}
         self.climates = {}
+        self.climate_selects = {}
+        self.select_add_entities = None
+        self.hass = None
         self.lights = {}
         self.covers = {}
         self.scenes = {}
@@ -402,6 +420,16 @@ class ComelitHub:
             self.sensors[name].update_state(value)
             # _LOGGER.debug("updated the sensor %s", name)
 
+    def update_climate_select(self, id, description, auto_man):
+        """Create or update a thermostat selector on the HA event loop."""
+        if id not in self.climate_selects:
+            selector = ComelitClimateSelect(id, description, auto_man, CommandHub(self))
+            self.climate_selects[id] = selector
+            if self.select_add_entities is not None:
+                self.select_add_entities([selector])
+        else:
+            self.climate_selects[id].update_auto_man(auto_man)
+
     def update_climate(self, id, description, data):
         try:
             assert HubClasses.TEMPERATURE in id
@@ -412,10 +440,12 @@ class ComelitHub:
             target = format(float(data[HubFields.TARGET_TEMPERATURE]), ".1f")
             target = float(target) / 10
 
-            is_enabled = int(data["auto_man"]) == 2
+            auto_man = int(data["auto_man"])
+            is_enabled = auto_man == 2
             is_winter_season = bool(int(data[HubFields.WINTER_SEASON]))
             status = bool(int(data[HubFields.STATUS]))
             state_dict = {
+                "auto_man": auto_man,
                 "is_enabled": is_enabled,
                 "is_winter_season": is_winter_season,
                 "status": status,
@@ -426,6 +456,14 @@ class ComelitHub:
             # support sensors without humidity
             if HubFields.HUMIDITY in data:
                 state_dict["measured_humidity"] = float(data[HubFields.HUMIDITY])
+
+            if self.hass is not None:
+                self.hass.loop.call_soon_threadsafe(
+                    self.update_climate_select,
+                    id,
+                    description,
+                    auto_man,
+                )
 
             climate = ComelitClimate(id, description, state_dict, CommandHub(self))
 
