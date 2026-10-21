@@ -29,6 +29,10 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
         self._state = state_dict
 
     @property
+    def extra_state_attributes(self):
+        return {"comelit_auto_man": self._state.get("auto_man")}
+
+    @property
     def hvac_mode(self):
         if self._state["status"]:
             if self._state["is_winter_season"]:
