@@ -77,12 +77,14 @@ def setup(hass, config):
                 scan_interval,
             )
             hass.data[DOMAIN]["hub"] = hub
+            hub.hass = hass
             load_platform(hass, "sensor", DOMAIN, {}, config)
             load_platform(hass, "light", DOMAIN, {}, config)
             load_platform(hass, "cover", DOMAIN, {}, config)
             load_platform(hass, "scene", DOMAIN, {}, config)
             load_platform(hass, "switch", DOMAIN, {}, config)
             load_platform(hass, "climate", DOMAIN, {}, config)
+            load_platform(hass, "select", DOMAIN, {}, config)
             hub.start()
             _LOGGER.info("Comelit SimpleHome integration started")
 
