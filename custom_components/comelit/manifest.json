@@ -11,7 +11,6 @@
 	"issue_tracker": "https://github.com/gicamm/homeassistant-comelit/issues",
 	"quality_scale": "silver",
 	"requirements": [
-		"requests",
 		"paho-mqtt",
 		"wrapt_timeout_decorator"
 	],
