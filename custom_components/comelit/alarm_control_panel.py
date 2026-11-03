@@ -13,7 +13,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
+def setup_platform(hass, _config, add_entities, _discovery_info=None):
     hass.data[DOMAIN]["vedo"].alarm_add_entities = add_entities
     _LOGGER.info("Comelit Vedo Alarm Integration started")
 

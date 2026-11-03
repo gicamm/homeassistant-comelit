@@ -20,7 +20,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
+def setup_platform(hass, _config, add_entities, _discovery_info=None):
     hass.data[DOMAIN]["hub"].climate_add_entities = add_entities
     _LOGGER.info("Comelit Climate Integration started")
 
@@ -85,9 +85,6 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
     def set_hvac_mode(self, hvac_mode):
         self._hub.climate_set_state(self._id, hvac_mode)
         self.schedule_update_ha_state()
-
-    def update(self):
-        pass
 
     @property
     def state(self):

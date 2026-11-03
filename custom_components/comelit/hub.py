@@ -334,8 +334,7 @@ class ComelitHub:
             if req_type in options:
                 options[req_type](payload)
         except Exception as e:
-            _LOGGER.error(f"Error dispatching {payload}")
-            _LOGGER.error(e)
+            _LOGGER.exception("Error dispatching %s: %s", payload, e)
 
     def manage_announce(self, payload):
         self.agent_id = payload["out_data"][0]["agent_id"]
@@ -432,8 +431,8 @@ class ComelitHub:
 
     def update_climate(self, id, description, data):
         try:
-            assert HubClasses.TEMPERATURE in id
-            # _LOGGER.debug("update_climate: %s has data %s", description, data)
+            if HubClasses.TEMPERATURE not in id:
+                raise ValueError(f"{id} is not a climate entity")
             measured_temp = format(float(data[HubFields.TEMPERATURE]), ".1f")
             measured_temp = float(measured_temp) / 10
 
@@ -554,7 +553,7 @@ class ComelitHub:
         except Exception as e:
             _LOGGER.exception("Error updating the cover %s", e)
 
-    def update_scenario(self, id, description, data):
+    def update_scenario(self, id, description, _data=None):
         try:
             scene = ComelitScenario(id, description, SceneHub(self))
             if id not in self.scenes:  # Add the new cover
@@ -591,56 +590,48 @@ class ComelitHub:
                 _LOGGER.debug("processing item %s", entity_id)
 
                 if HubClasses.LOGICAL in entity_id:
-                    logical_elements = item[HubFields.DATA][HubFields.ELEMENTS]
-                    for logical_element in logical_elements:
-                        logical_data = logical_element[HubFields.DATA]
-                        if HubClasses.LOGICAL in logical_data[HubFields.ID]:
-                            self.update_entities(logical_data[HubFields.ELEMENTS])
-                        else:
-                            self.update_entities([logical_data])
+                    self.update_logical(item)
 
-                try:
-                    item = item[HubFields.DATA]
-                except Exception:
-                    pass
-
-                if (
-                    HubClasses.POWER_CONSUMPTION in entity_id
-                    or HubClasses.FTV in entity_id
-                ):
-                    description = item[HubFields.DESCRIPTION]
-                    self.update_sensor(entity_id, description, item)
-                elif HubClasses.TEMPERATURE in entity_id:
-                    description = item[HubFields.DESCRIPTION]
-                    self.update_sensor(entity_id, description, item)
-                    # skip creating the climate sensor for the PT100 sensor and add compatibility for ONE
-                    if HubFields.SUB_TYPE in item and (
-                        item["sub_type"] == 16 or item["sub_type"] == 12
-                    ):  # skip creating the climate sensor for the PT100 sensor
-                        self.update_climate(entity_id, description, item)
-                elif HubClasses.LIGHT in entity_id:
-                    description = item[HubFields.DESCRIPTION]
-                    self.update_light(entity_id, description, item)
-                elif HubClasses.COVER in entity_id:
-                    description = item[HubFields.DESCRIPTION]
-                    _LOGGER.debug("processing cover %s: %s", description, item)
-                    self.update_cover(
-                        entity_id, description, item, HubFields.COVER_STATUS
-                    )
-                elif HubClasses.AUTOMATION in entity_id:
-                    description = item[HubFields.DESCRIPTION]
-                    self.update_cover(entity_id, description, item, HubFields.STATUS)
-                elif HubClasses.SCENARIO in entity_id:
-                    description = item[HubFields.DESCRIPTION]
-                    self.update_scenario(entity_id, description, item)
-                elif HubClasses.OTHER in entity_id:
-                    description = item[HubFields.DESCRIPTION]
-                    self.update_switch(entity_id, description, item)
-                else:
-                    continue
+                self.update_entity(entity_id, item.get(HubFields.DATA, item))
         except Exception as e:
-            _LOGGER.error("Update entities error")
-            _LOGGER.error(e)
+            _LOGGER.exception("Update entities error: %s", e)
+
+    def update_logical(self, item):
+        for logical_element in item[HubFields.DATA][HubFields.ELEMENTS]:
+            logical_data = logical_element[HubFields.DATA]
+            if HubClasses.LOGICAL in logical_data[HubFields.ID]:
+                self.update_entities(logical_data[HubFields.ELEMENTS])
+            else:
+                self.update_entities([logical_data])
+
+    def update_entity(self, entity_id, item):
+        # The first matching class wins (FTV and POWER_CONSUMPTION share "DOM#CN")
+        handlers = (
+            (HubClasses.POWER_CONSUMPTION, self.update_sensor),
+            (HubClasses.TEMPERATURE, self.update_temperature),
+            (HubClasses.LIGHT, self.update_light),
+            (HubClasses.COVER, self.update_blind),
+            (HubClasses.AUTOMATION, self.update_automation),
+            (HubClasses.SCENARIO, self.update_scenario),
+            (HubClasses.OTHER, self.update_switch),
+        )
+        for hub_class, handler in handlers:
+            if hub_class in entity_id:
+                handler(entity_id, item[HubFields.DESCRIPTION], item)
+                return
+
+    def update_temperature(self, id, description, data):
+        self.update_sensor(id, description, data)
+        # skip creating the climate for the PT100 sensor and add compatibility for ONE
+        if data.get(HubFields.SUB_TYPE) in (16, 12):
+            self.update_climate(id, description, data)
+
+    def update_blind(self, id, description, data):
+        _LOGGER.debug("processing cover %s: %s", description, data)
+        self.update_cover(id, description, data, HubFields.COVER_STATUS)
+
+    def update_automation(self, id, description, data):
+        self.update_cover(id, description, data, HubFields.STATUS)
 
     def status(self, payload):
         _LOGGER.debug("Dispatching status")
@@ -648,8 +639,7 @@ class ComelitHub:
             elements = payload["out_data"][0][HubFields.ELEMENTS]
             self.update_entities(elements)
         except Exception as e:
-            _LOGGER.error("Status error")
-            _LOGGER.error(e)
+            _LOGGER.exception("Status error: %s", e)
 
 
 def update_status(hub):
@@ -663,8 +653,7 @@ def update_status(hub):
         }
         hub.publish(req)
     except Exception as e:
-        _LOGGER.error("Error updating status")
-        _LOGGER.error(e)
+        _LOGGER.exception("Error updating status: %s", e)
 
 
 # Make a request for status

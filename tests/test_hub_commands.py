@@ -175,8 +175,9 @@ def test_command_hub_errors_are_logged():
 
 
 def test_climate_set_auto_man_rejects_unknown_mode():
+    commands = CommandHub(Mock())
     with pytest.raises(ValueError, match="Unsupported"):
-        CommandHub(Mock()).climate_set_auto_man("L", 3)
+        commands.climate_set_auto_man("L", 3)
 
 
 def test_scene_hub():
