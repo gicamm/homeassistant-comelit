@@ -17,14 +17,14 @@ test = [
     # runtime requirements are declared in custom_components/comelit/manifest.json.
     # pytest-homeassistant-custom-component pins the matching Home Assistant
     # release, so bump both lines together.
-    "homeassistant==2025.4.4",
+    "homeassistant==2026.6.4",
     "paho-mqtt",
     "wrapt-timeout-decorator",
     "dill",
     "wrapt",
     "module-wrapper",
     "multiprocess",
-    "pytest-homeassistant-custom-component==0.13.236",
+    "pytest-homeassistant-custom-component==0.13.340",
     "pytest-asyncio",
     "pytest-cov",
 ]
@@ -35,7 +35,7 @@ dev = [
 ]
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py314"
 line-length = 88
 extend-exclude = [
     "debug",
@@ -87,6 +87,9 @@ force-sort-within-sections = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# pytest-homeassistant-custom-component ships async autouse fixtures, which
+# pytest-asyncio only resolves for every test in auto mode.
+asyncio_mode = "auto"
 addopts = [
     "--strict-markers",
     "--cov",

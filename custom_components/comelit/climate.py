@@ -6,10 +6,13 @@ from homeassistant.components.climate import (
     HVACAction,
     HVACMode,
 )
-from homeassistant.components.sensor import (
+from homeassistant.const import (
+    ATTR_TEMPERATURE,
+    STATE_IDLE,
+    STATE_OFF,
+    STATE_ON,
     UnitOfTemperature,
 )
-from homeassistant.const import ATTR_TEMPERATURE, STATE_IDLE, STATE_OFF, STATE_ON
 
 from .comelit_device import ComelitDevice
 from .const import DOMAIN
