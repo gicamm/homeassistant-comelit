@@ -66,10 +66,10 @@ class ComelitVedo:
             headers["Cookie"] = uid
 
         millis = int(round(time.time() * 1000))
-        if "?" in path:
-            url = f"http://{self.host}:{self.port}/{path}&_={millis}"
-        else:
-            url = f"http://{self.host}:{self.port}/{path}?_={millis}"
+        # The Vedo central only serves plain HTTP on the local network.
+        base_url = f"http://{self.host}:{self.port}"  # NOSONAR
+        separator = "&" if "?" in path else "?"
+        url = f"{base_url}/{path}{separator}_={millis}"
         return url, headers
 
     # Do the GET from the vedo IP
