@@ -14,45 +14,46 @@ jobs:
       - name: "Checkout the repository"
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
-      - name: "Set up Python"
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+      - name: "Set up uv"
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
         with:
           python-version: "3.14"
-          check-latest: true
-          cache: "pip"
-          cache-dependency-path: "pyproject.toml"
+          enable-cache: true
 
       - name: "Install requirements"
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --group lint
+        run: uv sync --locked --only-group lint
 
       - name: "Lint"
-        run: python3 -m ruff check .
+        run: uv run --no-sync ruff check .
 
       - name: "Check formatting"
-        run: python3 -m ruff format --check .
+        run: uv run --no-sync ruff format --check .
 
   tests:
     runs-on: "ubuntu-latest"
     name: Run tests
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
-      - name: Setup Python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          # SonarCloud needs the full history to detect new code and blame.
+          fetch-depth: 0
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
         with:
           python-version: "3.14"
-          check-latest: true
-          cache: "pip"
-          cache-dependency-path: "pyproject.toml"
+          enable-cache: true
       - name: Install requirements
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --group test
+        run: uv sync --locked --only-group test
       - name: Run tests
-        run: pytest
+        run: uv run --no-sync pytest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5  # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+      - name: SonarQube Scan
+        # Secrets are not exposed to Dependabot and fork PRs: skip instead of failing.
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@4d1dc0c91ee400dcf8a6dddf2f705ac36542e304  # v8.4.0

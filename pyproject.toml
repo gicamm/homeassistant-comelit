@@ -1,14 +1,24 @@
 # This repository is a Home Assistant custom integration, not a distributable
 # Python package: Home Assistant loads `custom_components/comelit` directly and
 # resolves its runtime dependencies from `custom_components/comelit/manifest.json`.
-# This file therefore carries no build backend and no `[project]` table - it only
-# configures the development tooling (dev dependencies, ruff, pytest, coverage).
+# This file therefore carries no build backend - it only configures the
+# development tooling (dev dependencies, ruff, pytest, coverage). The minimal
+# `[project]` table exists only so uv can resolve the dependency groups into
+# `uv.lock`; `package = false` keeps uv from trying to build/install it.
+[project]
+name = "homeassistant-comelit"
+version = "0.0.0"
+requires-python = ">=3.14.2"
+dependencies = []
+
+[tool.uv]
+package = false
 
 
-# PEP 735 dependency groups (pip >= 25.1):
-#   pip install --group dev    # everything, for local development
-#   pip install --group lint   # just ruff, for the lint CI job
-#   pip install --group test   # test runtime, for the test CI job
+# PEP 735 dependency groups, locked in uv.lock:
+#   uv sync --locked --group dev     # everything, for local development
+#   uv sync --locked --only-group lint   # just ruff, for the lint CI job
+#   uv sync --locked --only-group test   # test runtime, for the test CI job
 [dependency-groups]
 lint = ["ruff"]
 
