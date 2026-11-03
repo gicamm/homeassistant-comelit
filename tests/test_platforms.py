@@ -135,7 +135,6 @@ def test_climate_properties(comelit_climate):
     assert comelit_climate.current_humidity == 45.0
     assert comelit_climate.temperature_unit == UnitOfTemperature.CELSIUS
     assert comelit_climate.supported_features == ClimateEntityFeature.TARGET_TEMPERATURE
-    comelit_climate.update()
 
 
 @pytest.mark.parametrize(
@@ -269,7 +268,6 @@ def test_scene_activate():
 
 def test_sensors():
     temperature = TemperatureSensor("DOM#CL#1", "Living", 20.5)
-    temperature.update()
     assert temperature.icon is not None
     assert temperature.device_class is not None
     assert temperature.state_class is not None

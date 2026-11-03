@@ -11,7 +11,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
+def setup_platform(hass, _config, add_entities, _discovery_info=None):
     hass.data[DOMAIN]["hub"].cover_add_entities = add_entities
     _LOGGER.info("Comelit Cover Integration started")
 
@@ -64,7 +64,7 @@ class ComelitCover(ComelitDevice, CoverEntity):
             self._state = STATE_CLOSING
         self.schedule_update_ha_state()
 
-    def update_state(self, state, position):
+    def update_state(self, state, position=-1):
         super().update_state(state)
 
         if position != -1:

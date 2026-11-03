@@ -18,7 +18,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
+def setup_platform(hass, _config, add_entities, _discovery_info=None):
     hass.data[DOMAIN]["hub"].sensor_add_entities = add_entities
     _LOGGER.info("Comelit Sensor Integration started")
 
@@ -51,13 +51,6 @@ class ComelitSensor(ComelitDevice, SensorEntity):  # <-- Changed
     @property
     def icon(self):
         return self._icon
-
-    # @property
-    # def state(self):
-    #     return self._state
-
-    def update(self):
-        pass
 
     @property
     def device_class(self):

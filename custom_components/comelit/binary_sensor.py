@@ -14,7 +14,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
+def setup_platform(hass, _config, add_entities, _discovery_info=None):
     if "vedo" in hass.data[DOMAIN] and hass.data[DOMAIN]["vedo"] is not None:
         hass.data[DOMAIN]["vedo"].binary_sensor_add_entities = add_entities
         _LOGGER.info("Comelit Vedo Binary Sensor Integration started")

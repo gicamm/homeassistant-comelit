@@ -10,7 +10,7 @@ OPTIONS = ["AUTO", "MANUALE", "OFF"]
 STATE_TO_OPTION = {0: "OFF", 1: "AUTO", 2: "MANUALE", 5: "OFF", 6: "OFF"}
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
+def setup_platform(hass, _config, add_entities, _discovery_info=None):
     """Register selectors and restore previously received states."""
     hub = hass.data[DOMAIN]["hub"]
 
