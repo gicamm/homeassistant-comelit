@@ -130,10 +130,10 @@ def comelit_climate(climate_state):
 def test_climate_properties(comelit_climate):
     assert comelit_climate.extra_state_attributes == {"comelit_auto_man": 2}
     assert comelit_climate.hvac_modes == [HVACMode.HEAT, HVACMode.COOL, HVACMode.OFF]
-    assert comelit_climate.target_temperature == 21.0
-    assert comelit_climate.current_temperature == 20.5
+    assert comelit_climate.native_target_temperature == 21.0
+    assert comelit_climate.native_current_temperature == 20.5
     assert comelit_climate.current_humidity == 45.0
-    assert comelit_climate.temperature_unit == UnitOfTemperature.CELSIUS
+    assert comelit_climate.native_temperature_unit == UnitOfTemperature.CELSIUS
     assert comelit_climate.supported_features == ClimateEntityFeature.TARGET_TEMPERATURE
 
 
@@ -162,7 +162,7 @@ def test_climate_set_temperature(comelit_climate):
     comelit_climate._hub.climate_set_temperature.assert_called_once_with(
         "DOM#CL#1", 22.5
     )
-    assert comelit_climate.target_temperature == 22.5
+    assert comelit_climate.native_target_temperature == 22.5
 
     comelit_climate.set_temperature()
     comelit_climate._hub.climate_set_temperature.assert_called_once()
