@@ -56,15 +56,15 @@ class ComelitClimate(ComelitDevice, ClimateEntity):
         return HVACAction.IDLE if self._state["is_enabled"] else HVACAction.OFF
 
     @property
-    def target_temperature(self):
+    def native_target_temperature(self):
         return self._state["target_temperature"]
 
     @property
-    def temperature_unit(self):
+    def native_temperature_unit(self):
         return UnitOfTemperature.CELSIUS
 
     @property
-    def current_temperature(self):
+    def native_current_temperature(self):
         return self._state["measured_temperature"]
 
     @property
