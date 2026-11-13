@@ -13,6 +13,10 @@ dependencies = []
 
 [tool.uv]
 package = false
+# homeassistant==2026.6.4 pins Pillow==12.2.0, which carries known CVEs fixed in
+# 13.0.0. Pillow is only a transitive test dependency here, so force the patched
+# release. Drop this once Home Assistant is bumped to >=2026.11 (Pillow 13).
+override-dependencies = ["pillow>=13.0.0"]
 
 
 # PEP 735 dependency groups, locked in uv.lock:
