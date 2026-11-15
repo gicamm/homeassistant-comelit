@@ -10,7 +10,7 @@
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=gicamm_homeassistant-comelit&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=gicamm_homeassistant-comelit)
 [![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=gicamm_homeassistant-comelit)
 [![License](https://img.shields.io/github/license/gicamm/homeassistant-comelit.svg?style=flat-square)](LICENSE)
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=gicamm&repository=homeassistant-comelit&category=integration)
+[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=gicamm&repository=homeassistant-comelit&category=integration)
 
 Comelit SimpleHome and Comelit Vedo integration lets you connect your Home Assistant instance to Comelit Simple Home and
 Vedo
@@ -20,9 +20,12 @@ For more information, see the [Wiki](https://github.com/gicamm/homeassistant-com
 
 ### Installation
 
-- Install
-  using [HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=gicamm&repository=homeassistant-comelit&category=integration) (
-  Or copy the contents of `custom_components/comelit/` to `<your config dir>/custom_components/comelit/`.)
+- Install from the Home Assistant Marketplace (Home Assistant 2026.11 or later): go to **Settings** > **Marketplace**,
+  search for "Comelit" and select **Install**, or use the button above.
+  - On Home Assistant 2026.10 or older, install it
+    with [HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=gicamm&repository=homeassistant-comelit&category=integration).
+    If you already installed it with HACS, the Marketplace migrates it automatically after you upgrade Home Assistant.
+  - Or copy the contents of `custom_components/comelit/` to `<your config dir>/custom_components/comelit/`.
 - Add the following to your `<your config dir>/configuration.yaml` file:
 
 ```yaml
