@@ -22,6 +22,10 @@ For more information, see the [Wiki](https://github.com/gicamm/homeassistant-com
 
 - Install from the Home Assistant Marketplace (Home Assistant 2026.11 or later): go to **Settings** > **Marketplace**,
   search for "Comelit" and select **Install**, or use the button above.
+  - This integration uses the `comelit` domain, the same as the Comelit SimpleHome integration built into Home Assistant,
+    so the Marketplace asks you to confirm that it replaces the built-in one. Confirm to continue.
+  - The latest release requires Home Assistant 2026.6 or later. On older versions, HACS and the Marketplace offer an
+    older release instead.
   - On Home Assistant 2026.10 or older, install it
     with [HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=gicamm&repository=homeassistant-comelit&category=integration).
     If you already installed it with HACS, the Marketplace migrates it automatically after you upgrade Home Assistant.
