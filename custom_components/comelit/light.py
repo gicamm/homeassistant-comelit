@@ -71,7 +71,7 @@ class ComelitLight(ComelitDevice, LightEntity):
         self._state = state
         if changed:
             self.schedule_update_ha_state()
-            
+
     def turn_on(self, **kwargs):
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = kwargs[ATTR_BRIGHTNESS]
