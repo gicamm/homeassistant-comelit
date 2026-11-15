@@ -9,6 +9,7 @@ from homeassistant.const import (
     CONF_PORT,
     CONF_SCAN_INTERVAL,
     CONF_USERNAME,
+    EVENT_HOMEASSISTANT_STOP,
 )
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.discovery import load_platform
@@ -85,6 +86,12 @@ def setup(hass, config):
             load_platform(hass, "switch", DOMAIN, {}, config)
             load_platform(hass, "climate", DOMAIN, {}, config)
             load_platform(hass, "select", DOMAIN, {}, config)
+
+            async def async_stop_hub(_event):
+                """Finish background work before Home Assistant closes its loop."""
+                await hass.async_add_executor_job(hub.stop)
+
+            hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, async_stop_hub)
             hub.start()
             _LOGGER.info("Comelit SimpleHome integration started")
 

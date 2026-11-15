@@ -1,4 +1,5 @@
 import json
+from threading import Event
 from unittest.mock import Mock, patch
 
 from homeassistant.components.climate import HVACMode
@@ -75,7 +76,7 @@ def test_publish_errors_are_logged():
 
 
 def test_mqtt_callbacks(comelit_hub):
-    client = Mock(hub=Mock())
+    client = Mock(hub=Mock(_stopping=Event()))
     message = Mock(payload=b'{"req_type": 5}')
     on_message_callback(client, None, message)
     client.hub.dispatch.assert_called_once_with({"req_type": 5})
@@ -311,13 +312,8 @@ def test_status_updater_polls_once_logged_in():
     hub = Mock(sessiontoken="token")
     updater = StatusUpdater("test", 30, hub)
 
-    class Stop(Exception):
-        pass
-
-    with (
-        patch.object(hub_module.time, "sleep", side_effect=Stop),
-        pytest.raises(Stop),
-    ):
+    with patch.object(updater._stop_event, "wait", return_value=True) as wait:
         updater.run()
 
     hub.publish.assert_called_once()
+    wait.assert_called_once_with(30)

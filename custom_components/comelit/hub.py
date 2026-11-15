@@ -2,8 +2,7 @@
 
 import json
 import logging
-from threading import Thread
-import time
+from threading import Event, Thread
 
 from homeassistant.components.climate import HVACMode
 from homeassistant.const import (
@@ -93,12 +92,16 @@ def publish(client, topic, agent_id, sequence_id, sessiontoken, data):
 
 
 def on_message_callback(client, userdata, message):
+    if client.hub._stopping.is_set():
+        return
     js = str(message.payload.decode("utf-8"))
     payload = json.loads(js)
     client.hub.dispatch(payload)
 
 
 def connect_callback(client, userdata, flags, rc):
+    if client.hub._stopping.is_set():
+        return
     try:
         client.subscribe(client.hub.topic_tx)
         client.hub.announce()
@@ -108,7 +111,10 @@ def connect_callback(client, userdata, flags, rc):
 
 
 def disconnect_callback(client, userdata, rc):
-    _LOGGER.warning("disconnected from hub")
+    if client.hub._stopping.is_set():
+        _LOGGER.debug("disconnected from hub during shutdown")
+    else:
+        _LOGGER.warning("disconnected from hub")
 
 
 # Manage lights, switch and covers
@@ -273,6 +279,7 @@ class ComelitHub:
         scan_interval,
     ):
         """Initialize the sensor."""
+        self._stopping = Event()
         self.sensors = {}
         self.climates = {}
         self.climate_selects = {}
@@ -319,7 +326,25 @@ class ComelitHub:
         self.client.loop_start()
         self.status_thread.start()
 
+    def stop(self):
+        """Stop polling and MQTT from an executor, while the HA loop is alive."""
+        if self._stopping.is_set():
+            return
+        self._stopping.set()
+        self.status_thread.stop()
+        try:
+            self.client.disconnect()
+        finally:
+            try:
+                # This waits for any MQTT callback already in progress to finish.
+                self.client.loop_stop()
+            finally:
+                if self.status_thread.is_alive():
+                    self.status_thread.join()
+
     def dispatch(self, payload):
+        if self._stopping.is_set():
+            return
         try:
             req_type = payload["req_type"]
 
@@ -376,6 +401,8 @@ class ComelitHub:
         self.publish(req)
 
     def publish(self, data):
+        if self._stopping.is_set():
+            return
         publish(
             self.client,
             self.topic_rx,
@@ -421,6 +448,8 @@ class ComelitHub:
 
     def update_climate_select(self, id, description, auto_man):
         """Create or update a thermostat selector on the HA event loop."""
+        if self._stopping.is_set():
+            return
         if id not in self.climate_selects:
             selector = ComelitClimateSelect(id, description, auto_man, CommandHub(self))
             self.climate_selects[id] = selector
@@ -663,12 +692,18 @@ class StatusUpdater(Thread):
         self.name = name
         self._scan_interval = scan_interval
         self.hub = hub
+        # Do not call this _stop: Thread uses that name internally for join().
+        self._stop_event = Event()
+
+    def stop(self):
+        """Wake the thread immediately, including during a long polling interval."""
+        self._stop_event.set()
 
     def run(self):
         _LOGGER.debug("Comelit Hub status snapshot started")
-        while True:
-            if self.hub.sessiontoken == "":
-                continue
-
-            update_status(self.hub)
-            time.sleep(self._scan_interval)
+        while not self._stop_event.is_set():
+            if self.hub.sessiontoken != "":
+                update_status(self.hub)
+            # Also wait when authentication has not provided a session token.
+            if self._stop_event.wait(self._scan_interval):
+                break
