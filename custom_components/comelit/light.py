@@ -61,9 +61,14 @@ class ComelitLight(ComelitDevice, LightEntity):
 
     def sync_with_hub(self, state, brightness, rgb):
         """Update the light from a hub status poll (hub is the source of truth)."""
+        changed = (
+            self._state != state or self._brightness != brightness or self._rgb != rgb
+        )
         self._brightness = brightness
         self._rgb = rgb
-        self.update_state(state)
+        self._state = state
+        if changed:
+            self.schedule_update_ha_state()
 
     def turn_on(self, **kwargs):
         if ATTR_BRIGHTNESS in kwargs:
